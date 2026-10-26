@@ -1,0 +1,344 @@
+
+<div class="module-page app-page">
+  <header class="module-header">
+    <div class="header-left">
+      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
+      <div>
+        <span class="eyebrow">Inventario</span>
+        <h1>Gestión de productos</h1>
+        <p>Controla SKU, precios, márgenes y alertas de stock.</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="abrirFormulario()">+ Nuevo producto</button>
+  </header>
+
+  <main class="module-main">
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span>Total productos</span>
+        <strong>{{ totalProductos }}</strong>
+        <small>SKU activos para la operación</small>
+      </article>
+      <article class="summary-card warning">
+        <span>Stock bajo</span>
+        <strong>{{ productosStockBajo }}</strong>
+        <small>Revisar reposición</small>
+      </article>
+      <article class="summary-card success">
+        <span>Valor inventario</span>
+        <strong>S/. {{ valorInventario.toFixed(2) }}</strong>
+        <small>Calculado por costo x stock</small>
+      </article>
+    </section>
+
+    <section class="toolbar-card">
+      <div>
+        <h2>Catálogo comercial</h2>
+        <p>Listado visual para sustentar inventario, rentabilidad y disponibilidad.</p>
+      </div>
+      <button class="btn-secondary" (click)="abrirFormulario()">Agregar SKU</button>
+    </section>
+
+    <!-- ===== SECCIÓN DE BÚSQUEDA ===== -->
+    <section class="search-card">
+      <div class="search-container">
+        <h3>🔍 Buscar productos</h3>
+        <div class="search-controls">
+          <div class="search-input-group">
+            <input 
+              type="text" 
+              [(ngModel)]="terminoBusqueda" 
+              placeholder="Ingresa nombre, SKU o categoría..."
+              (keyup.enter)="buscarProductos()"
+              [disabled]="buscando"
+              class="search-input"
+            />
+            <button 
+              class="btn-primary" 
+              (click)="buscarProductos()"
+              [disabled]="buscando"
+            >
+              {{ buscando ? '⏳ Buscando...' : '🔎 Buscar' }}
+            </button>
+            <button 
+              class="btn-secondary" 
+              (click)="limpiarBusqueda()"
+              [disabled]="buscando"
+            >
+              Limpiar
+            </button>
+          </div>
+
+          <div class="search-filters">
+            <label>Tipo de búsqueda:</label>
+            <select [(ngModel)]="tipoBusqueda" [disabled]="buscando">
+              <option value="nombre">Por nombre</option>
+              <option value="sku">Por SKU o nombre</option>
+              <option value="categoria">Por categoría</option>
+              <option value="stock-bajo">Stock bajo</option>
+            </select>
+          </div>
+
+          <p class="search-message" *ngIf="mensaje" [class.error]="mensaje.includes('❌')">
+            {{ mensaje }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mostrar resultados de búsqueda -->
+    <div class="productos-grid" *ngIf="productosFiltered.length > 0">
+      <article class="producto-card" *ngFor="let producto of productosFiltered" [class.stock-alert]="esStockBajo(producto)">
+        <div class="card-top">
+          <div class="product-image-container">
+            <img 
+              *ngIf="producto.imagenUrl" 
+              [src]="producto.imagenUrl" 
+              [alt]="producto.nombreProducto"
+              class="product-image"
+              (error)="onImageError($event)"
+            />
+            <div *ngIf="!producto.imagenUrl" class="product-icon-fallback">📦</div>
+          </div>
+          <span class="status-badge" [class.warning]="esStockBajo(producto)">
+            {{ esStockBajo(producto) ? 'Stock bajo' : 'Disponible' }}
+          </span>
+        </div>
+
+        <div class="product-title">
+          <h3>{{ producto.nombreProducto }}</h3>
+          <p>{{ producto.sku }}</p>
+        </div>
+
+        <span class="category-pill">{{ producto.categoria || 'Sin categoría' }}</span>
+
+        <div class="pricing-grid">
+          <div>
+            <small>Costo</small>
+            <strong>S/. {{ producto.precioCosto.toFixed(2) }}</strong>
+          </div>
+          <div>
+            <small>Venta</small>
+            <strong>S/. {{ producto.precioVenta.toFixed(2) }}</strong>
+          </div>
+          <div>
+            <small>Margen</small>
+            <strong>{{ calcularMargen(producto).toFixed(0) }}%</strong>
+          </div>
+        </div>
+
+        <div class="stock-panel">
+          <div>
+            <span>Stock actual</span>
+            <strong>{{ producto.stockTotal }}</strong>
+          </div>
+          <div>
+            <span>Mínimo</span>
+            <strong>{{ producto.stockMinimo || 5 }}</strong>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <button class="btn-edit" (click)="editarProducto(producto)">Editar</button>
+          <button class="btn-delete" (click)="eliminarProducto(producto.idProducto)">Eliminar</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- Mostrar todos los productos si no hay búsqueda activa -->
+    <div class="productos-grid" *ngIf="productosFiltered.length === 0 && productos.length > 0">
+      <article class="producto-card" *ngFor="let producto of productos" [class.stock-alert]="esStockBajo(producto)">
+        <div class="card-top">
+          <div class="product-image-container">
+            <img 
+              *ngIf="producto.imagenUrl" 
+              [src]="producto.imagenUrl" 
+              [alt]="producto.nombreProducto"
+              class="product-image"
+              (error)="onImageError($event)"
+            />
+            <div *ngIf="!producto.imagenUrl" class="product-icon-fallback">📦</div>
+          </div>
+          <span class="status-badge" [class.warning]="esStockBajo(producto)">
+            {{ esStockBajo(producto) ? 'Stock bajo' : 'Disponible' }}
+          </span>
+        </div>
+
+        <div class="product-title">
+          <h3>{{ producto.nombreProducto }}</h3>
+          <p>{{ producto.sku }}</p>
+        </div>
+
+        <span class="category-pill">{{ producto.categoria || 'Sin categoría' }}</span>
+
+        <div class="pricing-grid">
+          <div>
+            <small>Costo</small>
+            <strong>S/. {{ producto.precioCosto.toFixed(2) }}</strong>
+          </div>
+          <div>
+            <small>Venta</small>
+            <strong>S/. {{ producto.precioVenta.toFixed(2) }}</strong>
+          </div>
+          <div>
+            <small>Margen</small>
+            <strong>{{ calcularMargen(producto).toFixed(0) }}%</strong>
+          </div>
+        </div>
+
+        <div class="stock-panel">
+          <div>
+            <span>Stock actual</span>
+            <strong>{{ producto.stockTotal }}</strong>
+          </div>
+          <div>
+            <span>Mínimo</span>
+            <strong>{{ producto.stockMinimo || 5 }}</strong>
+          </div>
+        </div>
+
+        <div class="producto-actions">
+          <button class="btn-secondary" (click)="editarProducto(producto)">Editar</button>
+          <button class="btn-danger" (click)="eliminarProducto(producto.idProducto)">Eliminar</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="empty-state" *ngIf="productos.length === 0">
+      <div>📦</div>
+      <h2>No hay productos registrados</h2>
+      <p>Crea tu primer producto para iniciar la gestión del inventario.</p>
+      <button class="btn-primary" (click)="abrirFormulario()">Crear producto</button>
+    </div>
+  </main>
+
+  <div class="modal-overlay" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">Formulario</span>
+          <h2>{{ productoEditando ? 'Editar producto' : 'Nuevo producto' }}</h2>
+          <p>Completa los datos comerciales y de stock.</p>
+        </div>
+        <button class="icon-close" (click)="cerrarFormulario()">×</button>
+      </div>
+
+      <form [formGroup]="productoForm" (ngSubmit)="guardarProducto()" class="professional-form">
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Nombre del producto</label>
+            <input type="text" formControlName="nombreProducto" class="form-input" [class.input-error]="f['nombreProducto'].invalid && f['nombreProducto'].touched" placeholder="Ej. Smartphone X200" />
+            <small class="field-error" *ngIf="f['nombreProducto'].touched && f['nombreProducto'].errors?.['required']">El nombre es obligatorio.</small>
+            <small class="field-error" *ngIf="f['nombreProducto'].touched && f['nombreProducto'].errors?.['maxlength']">Máximo 150 caracteres.</small>
+          </div>
+
+          <div class="form-group">
+            <label>SKU</label>
+            <input type="text" formControlName="sku" class="form-input" [class.input-error]="f['sku'].invalid && f['sku'].touched" placeholder="SKU-PHONE-001" />
+            <small class="field-error" *ngIf="f['sku'].touched && f['sku'].errors?.['required']">El SKU es obligatorio.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Categoría</label>
+          <input type="text" formControlName="categoria" class="form-input" placeholder="Ej. Tecnología, Hogar, Accesorios" />
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea formControlName="descripcion" class="form-input" placeholder="Detalles adicionales del producto" rows="3"></textarea>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Precio costo (S/.)</label>
+            <input type="number" formControlName="precioCosto" class="form-input" [class.input-error]="f['precioCosto'].invalid && f['precioCosto'].touched" />
+            <small class="field-error" *ngIf="f['precioCosto'].touched && f['precioCosto'].errors?.['required']">Obligatorio.</small>
+            <small class="field-error" *ngIf="f['precioCosto'].touched && f['precioCosto'].errors?.['min']">No puede ser negativo.</small>
+          </div>
+          <div class="form-group">
+            <label>Margen deseado (%)</label>
+            <input type="number" formControlName="margenGananciaPct" class="form-input" min="0" step="0.1" placeholder="Ej. 50" />
+            <small>El precio venta se calcula automáticamente</small>
+          </div>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Precio venta sugerido (S/.)</label>
+            <input type="number" formControlName="precioVenta" class="form-input" [class.input-error]="(f['precioVenta'].invalid || productoForm.errors?.['ventaMenorQueCosto']) && f['precioVenta'].touched" readonly />
+            <small class="field-error" *ngIf="f['precioVenta'].touched && f['precioVenta'].errors?.['required']">Obligatorio.</small>
+            <small class="field-error" *ngIf="f['precioVenta'].touched && f['precioVenta'].errors?.['min']">Debe ser mayor que 0.</small>
+            <small class="field-error" *ngIf="productoForm.errors?.['ventaMenorQueCosto'] && f['precioVenta'].touched">La venta no puede ser menor al costo.</small>
+            <small class="hint">Se calcula automáticamente según el margen</small>
+          </div>
+          <div class="form-group">
+            <label>Margen calculado</label>
+            <input type="text" class="form-input" [value]="(margen || 0).toFixed(2) + '%'" readonly />
+            <small class="hint">Desde costo a venta</small>
+          </div>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Stock total</label>
+            <input type="number" formControlName="stockTotal" class="form-input" [class.input-error]="f['stockTotal'].invalid && f['stockTotal'].touched" />
+            <small class="field-error" *ngIf="f['stockTotal'].touched && f['stockTotal'].errors?.['required']">Obligatorio.</small>
+            <small class="field-error" *ngIf="f['stockTotal'].touched && f['stockTotal'].errors?.['min']">No puede ser negativo.</small>
+          </div>
+          <div class="form-group">
+            <label>Stock mínimo</label>
+            <input type="number" formControlName="stockMinimo" class="form-input" [class.input-error]="f['stockMinimo'].invalid && f['stockMinimo'].touched" />
+            <small class="field-error" *ngIf="f['stockMinimo'].touched && f['stockMinimo'].errors?.['min']">No puede ser negativo.</small>
+          </div>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Peso (kg)</label>
+            <input type="number" formControlName="pesoKg" class="form-input" placeholder="0.500" step="0.001" />
+          </div>
+          <div class="form-group">
+            <label>Volumen (m³)</label>
+            <input type="number" formControlName="volumenM3" class="form-input" placeholder="0.001" step="0.0001" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>URL de imagen</label>
+          <input type="url" formControlName="imagenUrl" class="form-input" placeholder="https://ejemplo.com/imagen.jpg" />
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Proveedor</label>
+            <input type="text" formControlName="proveedor" class="form-input" placeholder="Ej. Proveedor China ABC" />
+          </div>
+          <div class="form-group">
+            <label>País de origen</label>
+            <input type="text" formControlName="paisOrigen" class="form-input" placeholder="Ej. China, Vietnam" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Estado</label>
+          <select formControlName="estado" class="form-input">
+            <option value="activo">✅ Activo</option>
+            <option value="inactivo">⏸️ Inactivo</option>
+            <option value="discontinuado">❌ Discontinuado</option>
+          </select>
+        </div>
+
+        <div class="margin-box" *ngIf="margen !== null">
+          <span>Margen proyectado</span>
+          <strong>{{ margen!.toFixed(2) }}%</strong>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" (click)="cerrarFormulario()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="productoForm.invalid">Guardar producto</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

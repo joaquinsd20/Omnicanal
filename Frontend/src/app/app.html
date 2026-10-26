@@ -1,0 +1,30 @@
+<div class="app-container">
+  <nav class="navbar" *ngIf="isAuthenticated()">
+    <div class="navbar-content">
+      <div class="navbar-logo">
+        <strong>🎯 {{ title() }}</strong>
+      </div>
+
+      <div class="navbar-menu" [ngClass]="{'open': showMenu()}">
+        <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
+        <a routerLink="/importaciones" class="nav-link">✈️ Importaciones</a>
+        <a routerLink="/kardex" class="nav-link">📋 Kardex</a>
+        <a routerLink="/productos" class="nav-link">🛍️ Productos</a>
+        <a routerLink="/ventas" class="nav-link">💳 Ventas</a>
+        <a routerLink="/financiero" class="nav-link">💰 Financiero</a>
+        <a *ngIf="esAdminGlobal()" routerLink="/administrar-usuarios" class="nav-link admin-link">👮 Usuarios</a>
+        <button (click)="logout()" class="nav-link logout">🚪 Logout</button>
+      </div>
+
+      <div class="navbar-toggle" (click)="toggleMenu()">☰</div>
+
+      <div class="navbar-user" *ngIf="currentUser()">
+        {{ currentUser().email }} ({{ currentUser().tipoUsuario }})
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,178 @@
+
+<div class="login-page">
+  <section class="brand-panel">
+    <div class="brand-top">
+      <div class="brand-mark">O</div>
+      <div>
+        <h1>Omnicanal</h1>
+        <p>Gestión profesional para ventas, inventario y rentabilidad.</p>
+      </div>
+    </div>
+
+    <div class="hero-copy">
+      <span class="eyebrow">SaaS de gestión comercial</span>
+      <h2>Centraliza tu operación y toma decisiones con datos claros.</h2>
+      <p>
+        Controla productos, ventas, márgenes y alertas de stock desde una plataforma segura con autenticación JWT.
+      </p>
+    </div>
+
+    <div class="feature-grid">
+      <article class="feature-card">
+        <span>📦</span>
+        <h3>Inventario inteligente</h3>
+        <p>Stock, costos, precios y alertas de reabastecimiento en una sola vista.</p>
+      </article>
+      <article class="feature-card">
+        <span>💳</span>
+        <h3>Ventas ordenadas</h3>
+        <p>Seguimiento de pedidos, estados de entrega y pagos por cliente.</p>
+      </article>
+      <article class="feature-card">
+        <span>📈</span>
+        <h3>Control financiero</h3>
+        <p>Ingresos, costos, margen neto y ticket promedio para sustentar resultados.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="auth-panel">
+    <div class="auth-card">
+      <div class="card-header">
+        <span class="secure-badge">🔒 Acceso seguro</span>
+        <h2>{{ isRegistering ? 'Crear cuenta' : 'Iniciar sesión' }}</h2>
+        <p>{{ isRegistering ? 'Registra tu negocio para empezar a gestionar la operación.' : 'Ingresa con tu correo y contraseña para continuar.' }}</p>
+      </div>
+
+      <form class="form-container" *ngIf="!isRegistering" [formGroup]="loginForm" (ngSubmit)="login()">
+        <div class="info-message" *ngIf="info">{{ info }}</div>
+
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            placeholder="juan@omnicanal.pe"
+            class="form-input"
+            [class.input-error]="l['email'].invalid && l['email'].touched"
+          />
+          <small class="field-error" *ngIf="l['email'].touched && l['email'].errors?.['required']">El correo es obligatorio.</small>
+          <small class="field-error" *ngIf="l['email'].touched && l['email'].errors?.['email']">Ingresa un correo válido.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            placeholder="••••••••"
+            class="form-input"
+            [class.input-error]="l['password'].invalid && l['password'].touched"
+          />
+          <small class="field-error" *ngIf="l['password'].touched && l['password'].errors?.['required']">La contraseña es obligatoria.</small>
+          <small class="field-error" *ngIf="l['password'].touched && l['password'].errors?.['minlength']">Mínimo 6 caracteres.</small>
+        </div>
+
+        <div class="error-message" *ngIf="error">{{ error }}</div>
+
+        <button type="submit" [disabled]="loading || loginForm.invalid" class="btn-primary full">
+          {{ loading ? 'Validando acceso...' : 'Ingresar al sistema' }}
+        </button>
+
+        <p class="toggle-text">
+          ¿No tienes cuenta?
+          <a (click)="toggleForm()">Regístrate aquí</a>
+        </p>
+      </form>
+
+      <form class="form-container" *ngIf="isRegistering" [formGroup]="registroForm" (ngSubmit)="registro()">
+        <div class="form-group">
+          <label for="nombre">Nombre de usuario</label>
+          <input
+            type="text"
+            id="nombre"
+            formControlName="nombreUsuario"
+            placeholder="Nombre del responsable"
+            class="form-input"
+            [class.input-error]="r['nombreUsuario'].invalid && r['nombreUsuario'].touched"
+          />
+          <small class="field-error" *ngIf="r['nombreUsuario'].touched && r['nombreUsuario'].errors?.['required']">El nombre es obligatorio.</small>
+          <small class="field-error" *ngIf="r['nombreUsuario'].touched && r['nombreUsuario'].errors?.['minlength']">Mínimo 3 caracteres.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="email-reg">Correo electrónico</label>
+          <input
+            type="email"
+            id="email-reg"
+            formControlName="email"
+            placeholder="negocio@correo.com"
+            class="form-input"
+            [class.input-error]="r['email'].invalid && r['email'].touched"
+          />
+          <small class="field-error" *ngIf="r['email'].touched && r['email'].errors?.['required']">El correo es obligatorio.</small>
+          <small class="field-error" *ngIf="r['email'].touched && r['email'].errors?.['email']">Ingresa un correo válido.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="password-reg">Contraseña</label>
+          <input
+            type="password"
+            id="password-reg"
+            formControlName="password"
+            placeholder="Mínimo 6 caracteres"
+            class="form-input"
+            [class.input-error]="r['password'].invalid && r['password'].touched"
+          />
+          <small class="field-error" *ngIf="r['password'].touched && r['password'].errors?.['required']">La contraseña es obligatoria.</small>
+          <small class="field-error" *ngIf="r['password'].touched && r['password'].errors?.['minlength']">Mínimo 6 caracteres.</small>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" formControlName="telefono" placeholder="+51 999 999 999" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label for="ruc">RUC</label>
+            <input
+              type="text"
+              id="ruc"
+              formControlName="ruc"
+              placeholder="20123456789"
+              class="form-input"
+              [class.input-error]="r['ruc'].invalid && r['ruc'].touched"
+            />
+            <small class="field-error" *ngIf="r['ruc'].touched && r['ruc'].errors?.['pattern']">El RUC debe tener 11 dígitos.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="razon">Razón social</label>
+          <input type="text" id="razon" formControlName="razonSocial" placeholder="Nombre comercial" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label for="tipoUsuario">Tipo de usuario</label>
+          <select id="tipoUsuario" formControlName="tipoUsuario" class="form-input">
+            <option value="EMPRENDEDOR">Emprendedor</option>
+            <option value="ADMINISTRADOR_GLOBAL">Administrador Global (OG)</option>
+          </select>
+        </div>
+
+        <div class="error-message" *ngIf="error">{{ error }}</div>
+
+        <button type="submit" [disabled]="loading || registroForm.invalid" class="btn-primary full">
+          {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
+        </button>
+
+        <p class="toggle-text">
+          ¿Ya tienes cuenta?
+          <a (click)="toggleForm()">Inicia sesión</a>
+        </p>
+      </form>
+    </div>
+  </section>
+</div>

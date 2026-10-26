@@ -1,0 +1,316 @@
+
+<div class="sales-page app-page">
+  <header class="module-header">
+    <div class="header-left">
+      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
+      <div>
+        <span class="eyebrow">Ventas</span>
+        <h1>Gestión comercial</h1>
+        <p>Registra pedidos, controla estados de entrega y verifica pagos.</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="abrirFormulario()">+ Nueva venta</button>
+  </header>
+
+  <main class="module-main">
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span>Total ventas</span>
+        <strong>{{ ventas.length }}</strong>
+        <small>Operaciones registradas</small>
+      </article>
+      <article class="summary-card success">
+        <span>Ingreso total</span>
+        <strong>S/. {{ ingresoTotal.toFixed(2) }}</strong>
+        <small>Acumulado del módulo</small>
+      </article>
+      <article class="summary-card warning">
+        <span>Pendientes</span>
+        <strong>{{ ventasPendientes }}</strong>
+        <small>Requieren seguimiento</small>
+      </article>
+      <article class="summary-card info">
+        <span>Ticket promedio</span>
+        <strong>S/. {{ ticketPromedio.toFixed(2) }}</strong>
+        <small>Promedio por venta</small>
+      </article>
+    </section>
+
+    <section class="sales-board">
+      <div class="board-header">
+        <div>
+          <span class="eyebrow">Seguimiento</span>
+          <h2>Pedidos recientes</h2>
+          <p>Actualiza el estado logístico de cada venta desde la misma pantalla.</p>
+        </div>
+        <button class="btn-secondary" (click)="abrirFormulario()">Registrar pedido</button>
+      </div>
+
+      <div class="sales-list">
+        <article class="sale-card" *ngFor="let venta of ventas">
+          <div class="sale-main">
+            <div class="avatar">{{ venta.nombreCliente.charAt(0) }}</div>
+            <div>
+              <h3>{{ venta.nombreCliente }}</h3>
+              <p>{{ venta.numeroVenta }} · {{ venta.provinciaDestino || 'Sin provincia' }}</p>
+            </div>
+          </div>
+
+          <div class="sale-meta">
+            <div>
+              <small>Agencia</small>
+              <strong>{{ venta.agenciaEnvio || 'Por definir' }}</strong>
+            </div>
+            <div>
+              <small>Teléfono</small>
+              <strong>{{ venta.telefonoCliente || 'No registrado' }}</strong>
+            </div>
+            <div>
+              <small>Total</small>
+              <strong>S/. {{ (venta.total || 0).toFixed(2) }}</strong>
+            </div>
+            <div>
+              <small>Tracking</small>
+              <strong style="font-size: 0.9em; word-break: break-all;">{{ venta.numeroTracking || 'Por generar' }}</strong>
+            </div>
+          </div>
+
+          <div class="sale-footer">
+            <select [value]="venta.estadoVenta" (change)="cambiarEstado(venta.idVenta, $any($event.target).value)" class="form-select estado-select">
+              <option value="pendiente">Pendiente</option>
+              <option value="confirmada">Confirmada</option>
+              <option value="enviada">Enviada</option>
+              <option value="entregada">Entregada</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+            <span class="payment-badge" [class]="'payment-badge ' + venta.estadoPago">{{ venta.estadoPago || 'pendiente' }}</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-overlay" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">Nueva operación</span>
+          <h2>Registrar venta</h2>
+          <p>Completa la información del cliente, envío y pago.</p>
+        </div>
+        <button class="icon-close" (click)="cerrarFormulario()">×</button>
+      </div>
+
+      <div *ngIf="mensaje" style="padding: 10px 20px; margin: 10px 20px 0 20px; border-radius: 4px; background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50;">
+        {{ mensaje }}
+      </div>
+
+      <form [formGroup]="ventaForm" (ngSubmit)="guardarVenta()" class="professional-form">
+        <div class="form-group">
+          <label>🛒 Canal de venta</label>
+          <select formControlName="idCanal" class="form-select" [class.input-error]="f['idCanal'].invalid && f['idCanal'].touched">
+            <option [value]="null">-- Selecciona un canal --</option>
+            <option *ngFor="let canal of canales" [value]="canal.idCanal">
+              {{ canal.nombreCanal }} ({{ canal.tipoCanal }})
+            </option>
+          </select>
+          <small class="field-error" *ngIf="f['idCanal'].touched && f['idCanal'].errors?.['required']">El canal es obligatorio.</small>
+        </div>
+
+        <div class="form-grid three">
+          <div class="form-group">
+            <label>Nombre del cliente</label>
+            <input type="text" formControlName="nombreCliente" class="form-input" [class.input-error]="f['nombreCliente'].invalid && f['nombreCliente'].touched" placeholder="Ej. María García" />
+            <small class="field-error" *ngIf="f['nombreCliente'].touched && f['nombreCliente'].errors?.['required']">El cliente es obligatorio.</small>
+            <small class="field-error" *ngIf="f['nombreCliente'].touched && f['nombreCliente'].errors?.['minlength']">Mínimo 3 caracteres.</small>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" formControlName="emailCliente" class="form-input" [class.input-error]="f['emailCliente'].invalid && f['emailCliente'].touched" placeholder="cliente@ejemplo.com" />
+            <small class="field-error" *ngIf="f['emailCliente'].touched && f['emailCliente'].errors?.['email']">Ingresa un email válido.</small>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" formControlName="telefonoCliente" class="form-input" [class.input-error]="f['telefonoCliente'].invalid && f['telefonoCliente'].touched" placeholder="+51 999 999 999" />
+            <small class="field-error" *ngIf="f['telefonoCliente'].touched && f['telefonoCliente'].errors?.['pattern']">Ingresa un teléfono válido.</small>
+          </div>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Provincia destino</label>
+            <input type="text" formControlName="provinciaDestino" class="form-input" [class.input-error]="f['provinciaDestino'].invalid && f['provinciaDestino'].touched" placeholder="Ej. Lima" />
+            <small class="field-error" *ngIf="f['provinciaDestino'].touched && f['provinciaDestino'].errors?.['required']">La provincia es obligatoria.</small>
+          </div>
+          <div class="form-group">
+            <label>Distrito destino</label>
+            <input type="text" formControlName="distritoDestino" class="form-input" placeholder="Ej. San Isidro" />
+          </div>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Dirección de entrega</label>
+            <input type="text" formControlName="direccionEntrega" class="form-input" placeholder="Ej. Av. Principal 123, Apto. 4B" />
+          </div>
+          <div class="form-group">
+            <label>Agencia de envío</label>
+            <select formControlName="agenciaEnvio" class="form-select">
+              <option value="Shalom">Shalom</option>
+              <option value="Olva Courier">Olva Courier</option>
+              <option value="Marvisur">Marvisur</option>
+              <option value="Delivery propio">Delivery propio</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: AGREGAR PRODUCTOS -->
+        <div class="products-section" style="margin-top: 30px;">
+          <h3 style="margin-bottom: 15px; font-weight: bold; color: #333;">🛒 Agregar Productos</h3>
+          
+          <!-- Paso 1: Seleccionar categoría -->
+          <div class="form-group" style="margin-bottom: 15px;">
+            <label style="font-weight: 600; display: block; margin-bottom: 8px;">📂 Categoría</label>
+            <select [(ngModel)]="categoriaSeleccionada" (change)="cambiarCategoria(categoriaSeleccionada)" 
+                    [ngModelOptions]="{standalone: true}" class="form-select" style="width: 100%;">
+              <option [value]="">-- Todas las categorías --</option>
+              <option *ngFor="let cat of categorias" [value]="cat">{{ cat }}</option>
+            </select>
+          </div>
+
+          <!-- Paso 2: Buscar por nombre o SKU -->
+          <div class="form-group" style="margin-bottom: 15px; position: relative;">
+            <label style="font-weight: 600; display: block; margin-bottom: 8px;">🔍 Buscar Producto</label>
+            <input type="text" 
+                   [(ngModel)]="textoBusqueda" 
+                   (ngModelChange)="filtrarProductos()"
+                   [ngModelOptions]="{standalone: true}" 
+                   class="form-input" 
+                   placeholder="Escribe nombre o SKU para filtrar..."
+                   style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" />
+            
+            <!-- Lista desplegable de productos filtrados -->
+            <div *ngIf="mostrarListaProductos && productosFiltrados.length" 
+                 style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-top: none; border-radius: 0 0 4px 4px; max-height: 300px; overflow-y: auto; z-index: 100; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+              <div *ngFor="let prod of productosFiltrados" 
+                   (click)="seleccionarProducto(prod)"
+                   style="padding: 10px 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;">
+                <div style="font-weight: 600; color: #333;">{{ prod.nombreProducto }}</div>
+                <div style="font-size: 12px; color: #666;">
+                  SKU: {{ prod.sku }} | Stock: {{ prod.stockTotal }} | S/. {{ prod.precioVenta }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 3: Seleccionar cantidad -->
+          <div class="form-grid two" style="margin-bottom: 15px;">
+            <div class="form-group">
+              <label style="font-weight: 600;">Producto seleccionado</label>
+              <input type="text" 
+                     [value]="productos.find(p => p.idProducto === productoSeleccionado)?.nombreProducto || '-- Selecciona --'" 
+                     readonly 
+                     class="form-input" 
+                     style="background: #f9f9f9;" />
+            </div>
+            <div class="form-group">
+              <label style="font-weight: 600;">Cantidad</label>
+              <input type="number" [(ngModel)]="cantidadSeleccionada" [ngModelOptions]="{standalone: true}" 
+                     class="form-input" min="1" />
+            </div>
+          </div>
+
+          <!-- Botón Agregar -->
+          <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button type="button" (click)="agregarProductoAVenta()" [disabled]="!productoSeleccionado" 
+                    class="btn-secondary" 
+                    style="flex: 1; padding: 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+              ➕ Agregar a Carrito
+            </button>
+            <button type="button" (click)="productoSeleccionado = null; textoBusqueda = ''; categoriaSeleccionada = ''; mostrarListaProductos = false" 
+                    class="btn-ghost" 
+                    style="padding: 10px 20px; background: #f0f0f0; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
+              Limpiar
+            </button>
+          </div>
+
+          <!-- TABLA DE ITEMS -->
+          <table class="items-tabla" *ngIf="itemsVenta.length" style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+            <thead>
+              <tr style="background: #f5f5f5; border-bottom: 2px solid #ddd;">
+                <th style="padding: 10px; text-align: left;">Producto</th>
+                <th style="padding: 10px; text-align: center;">Precio Unit.</th>
+                <th style="padding: 10px; text-align: center;">Cantidad</th>
+                <th style="padding: 10px; text-align: right;">Subtotal</th>
+                <th style="padding: 10px; text-align: center;">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of itemsVenta; let i = index" style="border-bottom: 1px solid #eee;">
+                <td style="padding: 10px;">{{ item.nombreProducto }}</td>
+                <td style="padding: 10px; text-align: center;">S/. {{ item.precioUnitario.toFixed(2) }}</td>
+                <td style="padding: 10px; text-align: center;">{{ item.cantidad }}</td>
+                <td style="padding: 10px; text-align: right;">S/. {{ item.subtotal.toFixed(2) }}</td>
+                <td style="padding: 10px; text-align: center;">
+                  <button type="button" (click)="removerProducto(i)" class="btn-danger" style="padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    ❌
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="form-grid two">
+          <div class="form-group">
+            <label>Envío (S/.)</label>
+            <input type="number" formControlName="costoEnvio" class="form-input" [class.input-error]="f['costoEnvio'].invalid && f['costoEnvio'].touched" />
+            <small class="field-error" *ngIf="f['costoEnvio'].touched && f['costoEnvio'].errors?.['min']">No puede ser negativo.</small>
+          </div>
+          <div class="form-group">
+            <label>Descuento (S/.)</label>
+            <input type="number" formControlName="descuento" class="form-input" [class.input-error]="f['descuento'].invalid && f['descuento'].touched" />
+            <small class="field-error" *ngIf="f['descuento'].touched && f['descuento'].errors?.['min']">No puede ser negativo.</small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Estado de pago</label>
+          <select formControlName="estadoPago" class="form-select">
+            <option value="pendiente">Pendiente</option>
+            <option value="pagado">Pagado</option>
+          </select>
+        </div>
+
+        <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #eee;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Subtotal items:</span>
+            <strong>S/. {{ subtotalItems.toFixed(2) }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span>Costo envío:</span>
+            <strong>S/. {{ (ventaForm?.get('costoEnvio')?.value || 0).toFixed(2) }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px; color: #d9534f;">
+            <span>Descuento:</span>
+            <strong>-S/. {{ (ventaForm?.get('descuento')?.value || 0).toFixed(2) }}</strong>
+          </div>
+          <div style="border-top: 2px solid #ddd; padding-top: 10px; display: flex; justify-content: space-between;">
+            <span style="font-weight: bold; font-size: 16px;">TOTAL:</span>
+            <strong style="font-size: 16px; color: #5cb85c;">S/. {{ totalFormulario.toFixed(2) }}</strong>
+          </div>
+        </div>
+
+        <div class="total-box">
+          <span>Total calculado</span>
+          <strong>S/. {{ totalFormulario.toFixed(2) }}</strong>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" (click)="cerrarFormulario()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="ventaForm.invalid">Registrar venta</button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

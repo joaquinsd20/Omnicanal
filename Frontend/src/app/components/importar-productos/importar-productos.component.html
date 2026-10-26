@@ -1,0 +1,258 @@
+<div class="container importacion-container">
+  <div class="header">
+    <div class="header-content">
+      <h1>📦 Importar Productos</h1>
+      <p>Carga tus facturas y distribuye costos automáticamente</p>
+    </div>
+    <button class="btn-back" (click)="retroceder()" title="Volver al Dashboard">
+      ← Volver
+    </button>
+  </div>
+
+  <!-- Mensajes de estado -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+  <div *ngIf="exito" class="alert alert-success">
+    {{ exito }}
+  </div>
+
+  <!-- Resultado del Prorrateo -->
+  <div *ngIf="mostrarResultado && prorrateoResultado.length > 0" class="resultado-prorrateo">
+    <h3>✨ Desglose de Costos por Producto</h3>
+    <table class="tabla-prorrateo">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Original</th>
+          <th>Flete Asignado</th>
+          <th>Aduanas Asignado</th>
+          <th>Aranceles Asignado</th>
+          <th>Costo Final/Unitario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let prorrateo of prorrateoResultado">
+          <td><strong>{{ prorrateo.nombreProducto }}</strong></td>
+          <td>{{ prorrateo.cantidad }}</td>
+          <td>S/ {{ prorrateo.precioUnitarioOriginal | number: '1.2-2' }}</td>
+          <td>S/ {{ prorrateo.costoFleteAsignado | number: '1.2-2' }}</td>
+          <td>S/ {{ prorrateo.costoAduanasAsignado | number: '1.2-2' }}</td>
+          <td>S/ {{ prorrateo.costoArancelesAsignado | number: '1.2-2' }}</td>
+          <td class="costo-final"><strong>S/ {{ prorrateo.costoUnitarioFinal | number: '1.2-2' }}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Formulario de Importación -->
+  <form [formGroup]="importacionForm" (ngSubmit)="enviarImportacion()" class="formulario-importacion">
+    
+    <!-- Datos Generales -->
+    <div class="seccion">
+      <h3>📋 Datos Generales</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Número de Factura *</label>
+          <input type="text" class="form-control" formControlName="numeroFactura" placeholder="IMP-2026-001">
+          <small class="text-danger" *ngIf="importacionForm.get('numeroFactura')?.invalid && importacionForm.get('numeroFactura')?.touched">
+            Requerido (mín 3 caracteres)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha de Factura *</label>
+          <input type="date" class="form-control" formControlName="fechaFactura">
+          <small class="text-danger" *ngIf="importacionForm.get('fechaFactura')?.invalid && importacionForm.get('fechaFactura')?.touched">
+            Requerido
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Proveedor Internacional *</label>
+          <input type="text" class="form-control" formControlName="proveedorInternacional" placeholder="Alibaba, Amazon, etc">
+          <small class="text-danger" *ngIf="importacionForm.get('proveedorInternacional')?.invalid && importacionForm.get('proveedorInternacional')?.touched">
+            Requerido (mín 3 caracteres)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>País de Origen</label>
+          <input type="text" class="form-control" formControlName="paisOrigen" placeholder="China, India, etc">
+        </div>
+      </div>
+    </div>
+
+    <!-- Moneda y Conversión -->
+    <div class="seccion">
+      <h3>💱 Conversión de Moneda</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Monto Original *</label>
+          <input type="number" class="form-control" formControlName="montoOriginal" placeholder="1000" step="0.01">
+          <small class="text-danger" *ngIf="importacionForm.get('montoOriginal')?.invalid && importacionForm.get('montoOriginal')?.touched">
+            Requerido (mayor a 0)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Moneda *</label>
+          <select class="form-control" formControlName="monedaOriginal">
+            <option value="USD">USD - Dólar Americano</option>
+            <option value="EUR">EUR - Euro</option>
+            <option value="CNY">CNY - Yuan Chino</option>
+            <option value="PEN">PEN - Sol Peruano</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo de Cambio *</label>
+          <input type="number" class="form-control" formControlName="tipoCambio" placeholder="3.85" step="0.01">
+          <small class="text-danger" *ngIf="importacionForm.get('tipoCambio')?.invalid && importacionForm.get('tipoCambio')?.touched">
+            Requerido (mayor a 0)
+          </small>
+        </div>
+      </div>
+
+      <div class="total-soles">
+        <strong>Monto en Soles: S/ 
+          {{ calcularMontoEnSoles() | number: '1.2-2' }}
+        </strong>
+      </div>
+    </div>
+
+    <!-- Costos Desglosados -->
+    <div class="seccion">
+      <h3>💰 Costos Desglosados</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Costo Flete *</label>
+          <input type="number" class="form-control" formControlName="costoFlete" placeholder="150" step="0.01">
+          <small class="text-danger" *ngIf="importacionForm.get('costoFlete')?.invalid && importacionForm.get('costoFlete')?.touched">
+            Requerido (no negativo)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Costo Aduanas *</label>
+          <input type="number" class="form-control" formControlName="costoAduanas" placeholder="200" step="0.01">
+          <small class="text-danger" *ngIf="importacionForm.get('costoAduanas')?.invalid && importacionForm.get('costoAduanas')?.touched">
+            Requerido (no negativo)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Costo Aranceles *</label>
+          <input type="number" class="form-control" formControlName="costoAranceles" placeholder="100" step="0.01">
+          <small class="text-danger" *ngIf="importacionForm.get('costoAranceles')?.invalid && importacionForm.get('costoAranceles')?.touched">
+            Requerido (no negativo)
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Costo Transporte Local</label>
+          <input type="number" class="form-control" formControlName="costoTransporteLocal" placeholder="50" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>Otros Costos</label>
+          <input type="number" class="form-control" formControlName="otrosCostos" placeholder="25" step="0.01">
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalles Físicos -->
+    <div class="seccion">
+      <h3>📏 Detalles Físicos</h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label>Cantidad de Items *</label>
+          <input type="number" class="form-control" formControlName="cantidadItems" placeholder="2" min="1">
+          <small class="text-danger" *ngIf="importacionForm.get('cantidadItems')?.invalid && importacionForm.get('cantidadItems')?.touched">
+            Requerido (mín 1)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label>Peso Total (kg)</label>
+          <input type="number" class="form-control" formControlName="pesoTotalKg" placeholder="50" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>Volumen Total (m³)</label>
+          <input type="number" class="form-control" formControlName="volumenTotalM3" placeholder="0.5" step="0.01">
+        </div>
+
+        <div class="form-group">
+          <label>Fecha Llegada Estimada</label>
+          <input type="date" class="form-control" formControlName="fechaLlegadaEstimada">
+        </div>
+      </div>
+    </div>
+
+    <!-- Productos de Importación -->
+    <div class="seccion">
+      <h3>🛍️ Productos Importados</h3>
+      
+      <div *ngFor="let item of items.controls; let i = index" class="item-importacion">
+        <div [formGroupName]="i" class="form-row">
+          <div class="form-group">
+            <label>Producto *</label>
+            <select class="form-control" formControlName="idProducto">
+              <option value="">-- Selecciona un producto --</option>
+              <option *ngFor="let prod of productos" [value]="prod.idProducto">
+                {{ prod.nombreProducto }} (S/ {{ prod.precioCosto | number: '1.2-2' }})
+              </option>
+            </select>
+            <small class="text-danger" *ngIf="item.get('idProducto')?.invalid && item.get('idProducto')?.touched">
+              Requerido
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Cantidad *</label>
+            <input type="number" class="form-control" formControlName="cantidad" placeholder="10" min="1">
+            <small class="text-danger" *ngIf="item.get('cantidad')?.invalid && item.get('cantidad')?.touched">
+              Requerido (mín 1)
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Precio Unitario Original *</label>
+            <input type="number" class="form-control" formControlName="precioUnitarioOriginal" placeholder="50" step="0.01">
+            <small class="text-danger" *ngIf="item.get('precioUnitarioOriginal')?.invalid && item.get('precioUnitarioOriginal')?.touched">
+              Requerido (mayor a 0)
+            </small>
+          </div>
+
+          <div class="form-group">
+            <button type="button" class="btn btn-danger" (click)="eliminarItem(i)" *ngIf="items.length > 1">
+              ✕ Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-secondary mt-3" (click)="agregarItem()">
+        + Agregar Producto
+      </button>
+    </div>
+
+    <!-- Botón Enviar -->
+    <div class="botones">
+      <button type="submit" class="btn btn-primary btn-lg" [disabled]="cargando || importacionForm.invalid">
+        <span *ngIf="!cargando">✅ Registrar Importación</span>
+        <span *ngIf="cargando">⏳ Procesando...</span>
+      </button>
+    </div>
+  </form>
+</div>

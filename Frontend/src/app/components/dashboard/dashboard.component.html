@@ -1,0 +1,245 @@
+
+<div class="dashboard-page app-page">
+  <header class="topbar">
+    <div class="brand-block">
+      <div class="brand-icon">O</div>
+      <div>
+        <h1>Omnicanal</h1>
+        <p>{{ usuarioActual?.nombreUsuario || 'Usuario' }} · Panel operativo</p>
+      </div>
+    </div>
+
+    <button class="menu-btn" (click)="toggleMenu()" aria-label="Abrir menú">☰</button>
+
+    <nav class="nav-links" [class.open]="menuAbierto">
+      <a class="active" (click)="navegarA('/dashboard')">Dashboard</a>
+      <a (click)="navegarA('/importaciones')">🌍 Importaciones</a>
+      <a (click)="navegarA('/kardex')">📋 Kardex</a>
+      <a (click)="navegarA('/productos')">Inventario</a>
+      <a (click)="navegarA('/ventas')">Ventas</a>
+      <a (click)="navegarA('/financiero')">Financiero</a>
+      <button class="logout-btn" (click)="cerrarSesion()">Cerrar sesión</button>
+    </nav>
+  </header>
+
+  <main class="dashboard-content" *ngIf="!loading">
+    <section class="hero-section">
+      <div>
+        <span class="eyebrow">Resumen ejecutivo</span>
+        <h2>Control comercial en tiempo real</h2>
+        <p>Visualiza ingresos, utilidad, ventas recientes, importaciones, kardex y alertas para tomar decisiones rápidas.</p>
+      </div>
+      <div class="hero-buttons">
+        <button class="btn-primary" (click)="navegarA('/importaciones')">➕ Nueva importación</button>
+        <button class="btn-secondary" (click)="navegarA('/ventas')">💳 Registrar venta</button>
+      </div>
+    </section>
+
+    <section class="summary-grid">
+      <article class="metric-card income">
+        <div class="metric-icon">📊</div>
+        <div>
+          <span>Ingresos de hoy</span>
+          <strong>S/. {{ totalIngresos.toFixed(2) }}</strong>
+          <small>{{ ventasHoy }} ventas registradas</small>
+        </div>
+      </article>
+
+      <article class="metric-card profit">
+        <div class="metric-icon">💰</div>
+        <div>
+          <span>Ganancia neta</span>
+          <strong>S/. {{ gananciaNeta.toFixed(2) }}</strong>
+          <small>Margen operativo del día</small>
+        </div>
+      </article>
+
+      <article class="metric-card stock">
+        <div class="metric-icon">📦</div>
+        <div>
+          <span>Stock bajo</span>
+          <strong>{{ productosStockBajo.length }} productos</strong>
+          <small>Requieren reabastecimiento</small>
+        </div>
+      </article>
+
+      <article class="metric-card import">
+        <div class="metric-icon">✈️</div>
+        <div>
+          <span>Importaciones</span>
+          <strong>{{ importacionesRecientes.length }} activas</strong>
+          <small>En los últimos 30 días</small>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-grid-3col">
+      <!-- IMPORTACIONES RECIENTES -->
+      <article class="panel-card">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Smart Sourcing</span>
+            <h3>Importaciones</h3>
+          </div>
+          <button class="link-btn" (click)="navegarA('/importaciones')">Gestionar →</button>
+        </div>
+
+        <div class="list-stack compact" *ngIf="importacionesRecientes.length > 0">
+          <div class="import-row compact" *ngFor="let importacion of importacionesRecientes">
+            <div class="import-icon">✈️</div>
+            <div class="import-info">
+              <h4>Factura #{{ importacion.numeroFactura }}</h4>
+              <p>{{ importacion.proveedorInternacional }}</p>
+            </div>
+            <div class="import-result">
+              <strong>S/. {{ (importacion.montoEnSoles || 0).toFixed(2) }}</strong>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="importacionesRecientes.length === 0">
+          <p>Sin importaciones. <button class="link-btn" (click)="navegarA('/importaciones')">Crear →</button></p>
+        </div>
+      </article>
+
+      <!-- VENTAS RECIENTES -->
+      <article class="panel-card">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Operación</span>
+            <h3>Ventas</h3>
+          </div>
+          <button class="link-btn" (click)="navegarA('/ventas')">Ver todas →</button>
+        </div>
+
+        <div class="list-stack compact">
+          <div class="sale-row compact" *ngFor="let venta of ventasRecientes">
+            <div class="avatar">{{ venta.nombreCliente.charAt(0) }}</div>
+            <div class="sale-info">
+              <h4>{{ venta.nombreCliente }}</h4>
+              <p class="text-muted">{{ venta.numeroVenta }}</p>
+            </div>
+            <div class="sale-result">
+              <strong>S/. {{ venta.total.toFixed(2) }}</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- MOVIMIENTOS DE KARDEX -->
+      <article class="panel-card">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Inventario</span>
+            <h3>Kardex</h3>
+          </div>
+          <button class="link-btn" (click)="navegarA('/kardex')">Ver más →</button>
+        </div>
+
+        <div class="list-stack compact" *ngIf="movimientosRecientes.length > 0">
+          <div class="movement-row compact" *ngFor="let movimiento of movimientosRecientes">
+            <div class="movement-icon" [ngClass]="'tipo-' + movimiento.tipoMovimiento">
+              {{ movimiento.tipoMovimiento === 'entrada' ? '📥' : 
+                 movimiento.tipoMovimiento === 'salida' ? '📤' : 
+                 movimiento.tipoMovimiento === 'ajuste' ? '🔧' : '↩️' }}
+            </div>
+            <div class="movement-info">
+              <h4>{{ movimiento.nombreProducto }}</h4>
+              <p>Stock: {{ movimiento.stockPosterior }}</p>
+            </div>
+            <div class="movement-detail">
+              <small>{{ movimiento.fecha || 'Hoy' }}</small>
+            </div>
+          </div>
+        </div>
+        <div class="empty-state" *ngIf="movimientosRecientes.length === 0">
+          <p>Sin movimientos. <button class="link-btn" (click)="navegarA('/kardex')">Ver →</button></p>
+        </div>
+      </article>
+
+      <!-- ALERTAS DE STOCK + CANALES -->
+      <article class="panel-card">
+        <div class="section-header">
+          <div>
+            <span class="section-kicker">Operación</span>
+            <h3>Alertas & Canales</h3>
+          </div>
+          <button class="link-btn" (click)="navegarA('/productos')">Gestionar →</button>
+        </div>
+
+        <!-- STOCK BAJO -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-weight: 950; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Stock bajo</div>
+          <div class="stock-list compact">
+            <div class="stock-row compact" *ngFor="let producto of productosStockBajo">
+              <div>
+                <h4>{{ producto.nombreProducto }}</h4>
+              </div>
+              <span class="stock-badge">{{ producto.stockTotal }} und.</span>
+            </div>
+          </div>
+          <div *ngIf="productosStockBajo.length === 0" style="font-size: 12px; color: var(--muted);">Sin alertas</div>
+        </div>
+
+        <!-- SEPARADOR -->
+        <div style="height: 1px; background: var(--border); margin: 14px 0;"></div>
+
+        <!-- VENTAS POR CANAL -->
+        <div>
+          <div style="font-weight: 950; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;">Omnicanal</div>
+          <div class="canal-table-compact" *ngIf="ventasPorCanal.length > 0">
+            <div class="canal-row-compact" *ngFor="let canal of ventasPorCanal">
+              <div>
+                <strong style="font-size: 13px;">{{ canal.nombreCanal }}</strong>
+                <span class="canal-tipo-badge">{{ canal.tipoCanal }}</span>
+              </div>
+              <div style="text-align: right; font-size: 12px;">
+                <div style="font-weight: 600; color: var(--primary);">{{ canal.cantidadVentas }} ventas</div>
+                <small style="color: var(--success);">S/. {{ canal.montoTotal | number:'1.2-2' }}</small>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="ventasPorCanal.length === 0" style="font-size: 12px; color: var(--muted);">Sin ventas registradas</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="quick-actions">
+      <div class="section-title">
+        <span class="section-kicker">Acciones rápidas</span>
+        <h3>Gestiona tu operación</h3>
+      </div>
+      <div class="action-grid">
+        <button class="action-card" (click)="navegarA('/importaciones')">
+          <span>✈️</span>
+          <strong>Nueva importación</strong>
+          <small>Registrar factura, prorrateo y costos.</small>
+        </button>
+        <button class="action-card" (click)="navegarA('/ventas')">
+          <span>💳</span>
+          <strong>Registrar venta</strong>
+          <small>Crear pedido y actualizar estado comercial.</small>
+        </button>
+        <button class="action-card" (click)="navegarA('/productos')">
+          <span>➕</span>
+          <strong>Nuevo producto</strong>
+          <small>Registrar SKU, costos, precios y stock.</small>
+        </button>
+        <button class="action-card" (click)="navegarA('/kardex')">
+          <span>📋</span>
+          <strong>Ver kardex</strong>
+          <small>Auditoría completa de movimientos de inventario.</small>
+        </button>
+        <button class="action-card" (click)="navegarA('/financiero')">
+          <span>📈</span>
+          <strong>Ver reportes</strong>
+          <small>Revisar margen, costos y rendimiento.</small>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div class="loading" *ngIf="loading">
+    <div class="spinner"></div>
+    <p>Cargando datos del negocio...</p>
+  </div>
+</div>

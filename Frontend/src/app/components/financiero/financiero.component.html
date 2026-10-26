@@ -1,0 +1,153 @@
+
+<div class="finance-page app-page">
+  <header class="module-header">
+    <div class="header-left">
+      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
+      <div>
+        <span class="eyebrow">Financiero</span>
+        <h1>Panel de rentabilidad</h1>
+        <p>Analiza ingresos, costos, margen neto e indicadores clave del negocio.</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="volver()">Volver al resumen</button>
+  </header>
+
+  <main class="module-main">
+    <section class="hero-finance">
+      <div>
+        <span class="eyebrow light">Salud del negocio</span>
+        <h2>S/. {{ dashboardFinanciero.gananciaNeta.toFixed(2) }}</h2>
+        <p>Ganancia neta mensual con margen de {{ dashboardFinanciero.margenNeto }}%.</p>
+      </div>
+      <div class="hero-pill">
+        <span>Ticket promedio</span>
+        <strong>S/. {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
+      </div>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi-card income">
+        <span>Ingreso total</span>
+        <strong>S/. {{ dashboardFinanciero.totalIngresos.toFixed(2) }}</strong>
+        <small>{{ dashboardFinanciero.ventasDelDia }} ventas hoy</small>
+      </article>
+      <article class="kpi-card success">
+        <span>Ganancia neta</span>
+        <strong>S/. {{ dashboardFinanciero.gananciaNeta.toFixed(2) }}</strong>
+        <small>{{ dashboardFinanciero.margenNeto }}% margen</small>
+      </article>
+      <article class="kpi-card danger">
+        <span>Costos totales</span>
+        <strong>S/. {{ dashboardFinanciero.totalCostos.toFixed(2) }}</strong>
+        <small>Importaciones + logística</small>
+      </article>
+    </section>
+
+    <section class="finance-grid">
+      <article class="panel-card chart-panel">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">Tendencia</span>
+            <h2>Ventas últimos 7 días</h2>
+          </div>
+        </div>
+        <div class="chart-bars">
+          <div class="bar-item" *ngFor="let dia of ventasUltimos7Dias">
+            <div class="bar-track">
+              <div class="bar" [style.height.%]="getPorcentajeVenta(dia.ingresos)"></div>
+            </div>
+            <span class="bar-label">{{ dia.fecha }}</span>
+            <strong>S/. {{ dia.ingresos }}</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel-card today-panel">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">Hoy</span>
+            <h2>Resumen diario</h2>
+          </div>
+        </div>
+        <div class="today-list">
+          <div class="today-item">
+            <span>Ingresos</span>
+            <strong class="green">S/. {{ resumenDiario.ingresos.toFixed(2) }}</strong>
+          </div>
+          <div class="today-item">
+            <span>Costos</span>
+            <strong class="red">S/. {{ resumenDiario.costos.toFixed(2) }}</strong>
+          </div>
+          <div class="today-item">
+            <span>Ganancia</span>
+            <strong class="blue">S/. {{ resumenDiario.ganancia.toFixed(2) }}</strong>
+          </div>
+          <div class="today-item">
+            <span>Ventas</span>
+            <strong>{{ resumenDiario.ventasHoy }}</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="panel-card">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">Ranking</span>
+            <h2>Top productos por ingresos</h2>
+          </div>
+        </div>
+        <div class="ranking-list">
+          <div class="ranking-item" *ngFor="let producto of topProductos; let i = index">
+            <div class="rank-number">{{ i + 1 }}</div>
+            <div class="ranking-info">
+              <h3>{{ producto.nombre }}</h3>
+              <p>{{ producto.vendidos }} unidades vendidas</p>
+            </div>
+            <strong>S/. {{ producto.ingresos }}</strong>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel-card">
+        <div class="panel-header">
+          <div>
+            <span class="eyebrow">Indicadores</span>
+            <h2>KPIs clave</h2>
+          </div>
+        </div>
+        <div class="indicator-grid">
+          <div class="indicator">
+            <span>🎯</span>
+            <div>
+              <small>Ticket promedio</small>
+              <strong>S/. {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
+            </div>
+          </div>
+          <div class="indicator">
+            <span>📦</span>
+            <div>
+              <small>Valor inventario</small>
+              <strong>S/. {{ dashboardFinanciero.valorInventario.toFixed(2) }}</strong>
+            </div>
+          </div>
+          <div class="indicator">
+            <span>📈</span>
+            <div>
+              <small>Productos vendidos</small>
+              <strong>{{ dashboardFinanciero.productosVendidos }} unidades</strong>
+            </div>
+          </div>
+          <div class="indicator">
+            <span>💹</span>
+            <div>
+              <small>Margen utilidad</small>
+              <strong>{{ dashboardFinanciero.margenNeto }}%</strong>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>

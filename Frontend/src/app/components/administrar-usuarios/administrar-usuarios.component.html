@@ -1,0 +1,290 @@
+<div class="admin-container">
+  <!-- Header -->
+  <div class="admin-header">
+    <div class="header-content">
+      <h1>📋 ADMINISTRAR USUARIOS</h1>
+      <p>Panel para gestionar todos los usuarios con acceso al sistema</p>
+    </div>
+    <button class="btn-refresh" (click)="cargarDatos()" [disabled]="cargando">
+      {{ cargando ? '⏳ Actualizando...' : '🔄 Actualizar' }}
+    </button>
+  </div>
+
+  <!-- Estadísticas -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-icon">📊</span>
+      <div class="stat-content">
+        <div class="stat-label">Activos</div>
+        <div class="stat-value">{{ estadisticas.usuarios_activos || 0 }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🔒</span>
+      <div class="stat-content">
+        <div class="stat-label">Bloqueados</div>
+        <div class="stat-value">{{ estadisticas.usuarios_bloqueados || 0 }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">👮</span>
+      <div class="stat-content">
+        <div class="stat-label">Administradores</div>
+        <div class="stat-value">{{ estadisticas.administradores || 0 }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">👥</span>
+      <div class="stat-content">
+        <div class="stat-label">Total</div>
+        <div class="stat-value">{{ estadisticas.total_usuarios || 0 }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros y Acciones -->
+  <div class="controls-bar">
+    <div class="tabs">
+      <button
+        class="tab-btn"
+        [class.active]="seccionActiva === 'activos'"
+        (click)="cambiarSeccion('activos')">
+        Activos ({{ usuariosActivos.length }})
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="seccionActiva === 'bloqueados'"
+        (click)="cambiarSeccion('bloqueados')">
+        Bloqueados ({{ usuariosBloqueados.length }})
+      </button>
+      <button
+        class="tab-btn"
+        [class.active]="seccionActiva === 'administradores'"
+        (click)="cambiarSeccion('administradores')">
+        Administradores ({{ administradores.length }})
+      </button>
+    </div>
+    <button class="btn-create" (click)="abrirModalCrear()">
+      + Nuevo Usuario
+    </button>
+  </div>
+
+  <!-- Mensajes -->
+  <div *ngIf="mensajeExito" class="alert alert-success">
+    ✅ {{ mensajeExito }}
+  </div>
+  <div *ngIf="mensajeError" class="alert alert-error">
+    ❌ {{ mensajeError }}
+  </div>
+
+  <!-- Tabla de Usuarios -->
+  <div class="table-container">
+    <table class="usuarios-table" *ngIf="usuariosParaMostrar.length > 0; else noHayUsuarios">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Plan</th>
+          <th>Estado</th>
+          <th>Tipo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let usuario of usuariosParaMostrar" [class.bloqueado]="usuario.estado === 'BLOQUEADO'">
+          <td class="nombre">{{ usuario.nombreUsuario }}</td>
+          <td class="email">{{ usuario.email }}</td>
+          <td class="plan">
+            <span class="plan-badge" [ngClass]="(usuario.planSuscripcion || 'PLAN_EMPRENDEDOR').toLowerCase()">
+              {{ usuario.planSuscripcion === 'PLAN_PRO' ? 'PRO' : 'EMPRENDEDOR' }}
+            </span>
+          </td>
+          <td class="estado">
+            <span class="estado-badge" [ngClass]="(usuario.estado || 'ACTIVO').toLowerCase()">
+              {{ usuario.estado === 'BLOQUEADO' ? '🔒 BLOQUEADO' : '✅ ACTIVO' }}
+            </span>
+          </td>
+          <td class="tipo">{{ usuario.tipoUsuario || 'EMPRENDEDOR' }}</td>
+          <td class="acciones">
+            <button class="btn-icon" title="Ver detalles" (click)="verDetalles(usuario)">👁️</button>
+            <button
+              class="btn-icon"
+              [title]="usuario.estado === 'BLOQUEADO' ? 'Desbloquear' : 'Bloquear'"
+              (click)="usuario.estado === 'BLOQUEADO' ? desbloquearUsuario(usuario) : bloquearUsuario(usuario)">
+              {{ usuario.estado === 'BLOQUEADO' ? '✅' : '❌' }}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noHayUsuarios>
+      <div class="empty-state">
+        <p>📭 No hay usuarios en esta sección</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Modal: Crear Usuario -->
+  <div *ngIf="mostrarModalCrear" class="modal-overlay" (click)="cerrarModalCrear()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Crear Nuevo Usuario</h2>
+        <button class="btn-close" (click)="cerrarModalCrear()">✕</button>
+      </div>
+
+      <form [formGroup]="formularioCrear" (ngSubmit)="guardarUsuario()" class="form-create">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre Usuario</label>
+            <input
+              type="text"
+              formControlName="nombreUsuario"
+              placeholder="Ej: Juan Comerciante"
+              class="form-control">
+            <small *ngIf="formularioCrear.get('nombreUsuario')?.invalid && formularioCrear.get('nombreUsuario')?.touched"
+              class="error-text">
+              Ingresa un nombre de al menos 3 caracteres
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="usuario@omnicanal.pe"
+              class="form-control">
+            <small *ngIf="formularioCrear.get('email')?.invalid && formularioCrear.get('email')?.touched"
+              class="error-text">
+              Ingresa un email válido
+            </small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Razón Social</label>
+            <input
+              type="text"
+              formControlName="razonSocial"
+              placeholder="Ej: Comercio XYZ SAC"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label>RUC</label>
+            <input
+              type="text"
+              formControlName="ruc"
+              placeholder="Ej: 20123456789"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ciudad</label>
+            <select formControlName="ciudad" class="form-control">
+              <option value="Lima">Lima</option>
+              <option value="Arequipa">Arequipa</option>
+              <option value="Cusco">Cusco</option>
+              <option value="Trujillo">Trujillo</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Contraseña</label>
+            <input
+              type="password"
+              formControlName="password"
+              placeholder="Contraseña temporal"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo Usuario</label>
+            <select formControlName="tipoUsuario" class="form-control">
+              <option value="EMPRENDEDOR">Emprendedor</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="ADMINISTRADOR">Administrador</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Plan Suscripción</label>
+            <select formControlName="planSuscripcion" class="form-control">
+              <option value="PLAN_EMPRENDEDOR">Plan Emprendedor</option>
+              <option value="PLAN_PRO">Plan Pro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="cerrarModalCrear()">Cancelar</button>
+          <button type="submit" class="btn-save" [disabled]="formularioCrear.invalid || cargando">
+            {{ cargando ? '⏳ Guardando...' : '✓ Crear Usuario' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Detalles Usuario -->
+  <div *ngIf="mostrarModalDetalles && usuarioSeleccionado" class="modal-overlay" (click)="cerrarModalDetalles()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalles del Usuario</h2>
+        <button class="btn-close" (click)="cerrarModalDetalles()">✕</button>
+      </div>
+
+      <div class="details-content">
+        <div class="detail-row">
+          <span class="detail-label">Nombre:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.nombreUsuario }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Email:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.email }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Razón Social:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.razonSocial || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">RUC:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.ruc || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Ciudad:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.ciudad || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Tipo Usuario:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.tipoUsuario }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Plan Suscripción:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.planSuscripcion }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Estado:</span>
+          <span class="detail-value" [ngClass]="(usuarioSeleccionado.estado || 'ACTIVO').toLowerCase()">
+            {{ usuarioSeleccionado.estado === 'BLOQUEADO' ? '🔒 BLOQUEADO' : '✅ ACTIVO' }}
+          </span>
+        </div>
+        <div class="detail-row" *ngIf="usuarioSeleccionado.createdAt">
+          <span class="detail-label">Creado:</span>
+          <span class="detail-value">{{ usuarioSeleccionado.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="cerrarModalDetalles()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

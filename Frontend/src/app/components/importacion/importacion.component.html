@@ -1,0 +1,296 @@
+<div class="module-page">
+  <header class="module-header">
+    <div class="header-left">
+      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
+      <div>
+        <span class="eyebrow">Logística</span>
+        <h1>Importaciones</h1>
+        <p>Gestiona compras internacionales y cálculo de costo real con prorrateo.</p>
+      </div>
+    </div>
+    <button class="btn-primary" (click)="abrirFormulario()">+ Nueva importación</button>
+  </header>
+
+  <main class="module-main">
+    <!-- RESUMEN -->
+    <section class="summary-grid">
+      <article class="summary-card">
+        <span>Total importaciones</span>
+        <strong>{{ importaciones.length }}</strong>
+        <small>Compras procesadas</small>
+      </article>
+      <article class="summary-card success">
+        <span>Monto total invertido</span>
+        <strong>S/. {{ calcularMontoTotalInvertido().toFixed(2) }}</strong>
+        <small>Convertido a soles</small>
+      </article>
+      <article class="summary-card warning">
+        <span>Costos adicionales</span>
+        <strong>S/. {{ calcularCostosTotalAdicionales().toFixed(2) }}</strong>
+        <small>Flete, aduanas, aranceles</small>
+      </article>
+    </section>
+
+    <!-- LISTADO -->
+    <section class="toolbar-card">
+      <div>
+        <h2>Historial de importaciones</h2>
+        <p>Visualiza el prorrateo automático de costos en cada compra internacional.</p>
+      </div>
+      <button class="btn-secondary" (click)="abrirFormulario()">Registrar compra</button>
+    </section>
+
+    <!-- TABLA DE IMPORTACIONES -->
+    <div class="tabla-container" *ngIf="importaciones.length > 0; else sinImportaciones">
+      <table class="tabla-importaciones">
+        <thead>
+          <tr>
+            <th>Factura</th>
+            <th>Proveedor</th>
+            <th>Fecha</th>
+            <th>Monto Original</th>
+            <th>Monto en S/.</th>
+            <th>Costos Adic.</th>
+            <th>Total</th>
+            <th>Ítems</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let imp of importaciones" [class.en-transito]="imp.estadoImportacion === 'en_transito'">
+            <td class="factura-cell">{{ imp.numeroFactura }}</td>
+            <td>{{ imp.proveedorInternacional }}</td>
+            <td>{{ imp.fechaFactura | date: 'dd/MM/yyyy' }}</td>
+            <td class="number">{{ imp.montoOriginal.toFixed(2) }} {{ imp.monedaOriginal }}</td>
+            <td class="number">S/. {{ imp.montoEnSoles.toFixed(2) }}</td>
+            <td class="number">S/. {{ imp.costoTotal.toFixed(2) }}</td>
+            <td class="number total">S/. {{ (imp.montoEnSoles + imp.costoTotal).toFixed(2) }}</td>
+            <td class="center">{{ imp.cantidadItems }} x</td>
+            <td class="center">
+              <span class="status-badge" [class.en-transito]="imp.estadoImportacion === 'en_transito'">
+                {{ imp.estadoImportacion === 'en_transito' ? '🚚 En tránsito' : '✅ Recibido' }}
+              </span>
+            </td>
+            <td class="center">
+              <button class="btn-small" (click)="obtenerDetalles(imp.idImportacion!)">
+                Ver detalles
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ESTADO VACÍO -->
+    <ng-template #sinImportaciones>
+      <div class="empty-state">
+        <div style="font-size: 48px; margin-bottom: 16px;">📦</div>
+        <h3>No hay importaciones registradas</h3>
+        <p>Comienza registrando tu primera compra internacional</p>
+        <button class="btn-primary" (click)="abrirFormulario()" style="margin-top: 16px;">
+          + Nueva importación
+        </button>
+      </div>
+    </ng-template>
+  </main>
+
+  <!-- MODAL FORMULARIO -->
+  <div class="modal-overlay" *ngIf="mostrarFormulario" (click)="cerrarFormulario()">
+    <section class="modal large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <span class="eyebrow">Importación</span>
+          <h2>Registrar nueva compra internacional</h2>
+          <p>Ingresa los datos de la factura y distribución de productos</p>
+        </div>
+        <button class="icon-close" (click)="cerrarFormulario()">×</button>
+      </div>
+
+      <form [formGroup]="importacionForm" (ngSubmit)="guardarImportacion()" class="professional-form">
+        <!-- DATOS DE LA FACTURA -->
+        <div class="section-title">📄 Datos de la factura</div>
+        <div class="form-grid three">
+          <div class="form-group">
+            <label>Número de factura</label>
+            <input type="text" formControlName="numeroFactura" class="form-input" placeholder="INV-2026-001" />
+          </div>
+          <div class="form-group">
+            <label>Fecha de factura</label>
+            <input type="date" formControlName="fechaFactura" class="form-input" />
+          </div>
+          <div class="form-group">
+            <label>País de origen</label>
+            <input type="text" formControlName="paisOrigen" class="form-input" placeholder="China" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Proveedor internacional</label>
+          <input type="text" formControlName="proveedorInternacional" class="form-input" placeholder="Ej. AliExpress, Alibaba" />
+        </div>
+
+        <!-- DATOS MONETARIOS -->
+        <div class="section-title">💰 Datos monetarios</div>
+        <div class="form-grid three">
+          <div class="form-group">
+            <label>Monto original</label>
+            <input type="number" formControlName="montoOriginal" class="form-input" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Moneda</label>
+            <select formControlName="monedaOriginal" class="form-input">
+              <option value="USD">💵 USD (Dólar)</option>
+              <option value="EUR">€ EUR (Euro)</option>
+              <option value="CNY">¥ CNY (Yuan)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tipo de cambio</label>
+            <input type="number" formControlName="tipoCambio" class="form-input" step="0.01" />
+          </div>
+        </div>
+
+        <div class="info-box">
+          💡 <strong>Monto en S/.</strong> {{ calcularMontoEnSoles().toFixed(2) }}
+        </div>
+
+        <!-- COSTOS ADICIONALES -->
+        <div class="section-title">🚚 Costos adicionales (Se prorratean)</div>
+        <div class="form-grid three">
+          <div class="form-group">
+            <label>Costo flete internacional</label>
+            <input type="number" formControlName="costoFlete" class="form-input" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Costo aduanas</label>
+            <input type="number" formControlName="costoAduanas" class="form-input" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Aranceles</label>
+            <input type="number" formControlName="costoAranceles" class="form-input" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-grid three">
+          <div class="form-group">
+            <label>Transporte local (S/.)</label>
+            <input type="number" formControlName="costoTransporteLocal" class="form-input" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Otros costos</label>
+            <input type="number" formControlName="otrosCostos" class="form-input" step="0.01" />
+          </div>
+          <div></div>
+        </div>
+
+        <div class="info-box success">
+          ✅ <strong>Total costos adicionales:</strong> S/. {{ calcularCostoTotal().toFixed(2) }}
+        </div>
+
+        <!-- DATOS DE ENVÍO -->
+        <div class="section-title">📦 Datos del envío</div>
+        <div class="form-grid three">
+          <div class="form-group">
+            <label>Peso total (kg)</label>
+            <input type="number" formControlName="pesoTotalKg" class="form-input" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label>Volumen total (m³)</label>
+            <input type="number" formControlName="volumenTotalM3" class="form-input" step="0.001" />
+          </div>
+          <div class="form-group">
+            <label>Fecha llegada estimada</label>
+            <input type="date" formControlName="fechaLlegadaEstimada" class="form-input" />
+          </div>
+        </div>
+
+        <!-- ITEMS DE IMPORTACIÓN -->
+        <div class="section-title">🛍️ Artículos importados</div>
+        <div class="items-selector">
+          <div class="selector-row">
+            <select [(ngModel)]="productoSeleccionado" [ngModelOptions]="{standalone: true}" class="form-input">
+              <option [ngValue]="null">Selecciona producto...</option>
+              <option *ngFor="let prod of productos" [ngValue]="prod.idProducto">
+                {{ prod.nombreProducto }} ({{ prod.sku }})
+              </option>
+            </select>
+            <input type="number" [(ngModel)]="cantidadItem" [ngModelOptions]="{standalone: true}" placeholder="Cantidad" class="form-input" min="1" />
+            <input type="number" [(ngModel)]="precioUnitarioItem" [ngModelOptions]="{standalone: true}" placeholder="Precio unitario" class="form-input" step="0.01" min="0.01" />
+            <button type="button" (click)="agregarItem()" class="btn-secondary">+ Agregar</button>
+          </div>
+        </div>
+
+        <!-- TABLA DE ITEMS -->
+        <div *ngIf="itemsImportacion.length > 0" class="items-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unit.</th>
+                <th>Subtotal</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of itemsImportacion; let i = index">
+                <td>{{ item.nombreProducto }}</td>
+                <td class="number">{{ item.cantidad }}</td>
+                <td class="number">{{ item.precioUnitarioOriginal.toFixed(2) }}</td>
+                <td class="number">{{ (item.cantidad * item.precioUnitarioOriginal).toFixed(2) }}</td>
+                <td class="center">
+                  <button type="button" (click)="eliminarItem(i)" class="btn-delete-small">×</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RESULTADO DEL PRORRATEO -->
+        <div *ngIf="importacionGuardada" class="prorrateo-resultado">
+          <h3>📊 Prorrateo calculado</h3>
+          <div class="prorrateo-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cant.</th>
+                  <th>Precio Orig.</th>
+                  <th>Flete</th>
+                  <th>Aduanas</th>
+                  <th>Aranceles</th>
+                  <th>Costo Final/Unit.</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let prorr of importacionGuardada.prorrateos">
+                  <td>{{ prorr.nombreProducto }}</td>
+                  <td class="number">{{ prorr.cantidad }}</td>
+                  <td class="number">{{ prorr.precioUnitarioOriginal.toFixed(4) }}</td>
+                  <td class="number">{{ prorr.costoFleteAsignado.toFixed(2) }}</td>
+                  <td class="number">{{ prorr.costoAduanasAsignado.toFixed(2) }}</td>
+                  <td class="number">{{ prorr.costoArancelesAsignado.toFixed(2) }}</td>
+                  <td class="number highlight">{{ prorr.costoUnitarioFinal.toFixed(4) }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="info-box success">
+            ✅ Este costo final se asigna automáticamente al producto en el inventario
+          </div>
+        </div>
+
+        <!-- MENSAJES Y ACCIONES -->
+        <p class="message" *ngIf="mensaje" [class.error]="mensaje.includes('❌')">{{ mensaje }}</p>
+
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" (click)="cerrarFormulario()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="importacionForm.invalid || itemsImportacion.length === 0 || cargando">
+            {{ cargando ? '⏳ Guardando...' : '✅ Guardar importación' }}
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

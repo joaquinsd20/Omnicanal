@@ -1,0 +1,267 @@
+<div class="sunat-test-container">
+  <div class="sunat-header">
+    <h1>🔐 Prueba de Integración SUNAT</h1>
+    <p>Según Manual: Consulta Integrada de Comprobante de Pago por Servicio Web</p>
+  </div>
+
+  <div class="content-wrapper">
+    <!-- PANEL IZQUIERDO: CREDENCIALES -->
+    <div class="panel credenciales-panel">
+      <h2>Paso 1️⃣: Generar Token SUNAT</h2>
+      <p class="info">
+        📌 Obtén tus credenciales en: 
+        <strong>SUNAT SOL → Empresas → Comprobantes de Pago → Consulta de Validez → Credenciales de API SUNAT</strong>
+      </p>
+
+      <form [formGroup]="credencialesForm" class="form-group">
+        <div class="input-wrapper">
+          <label>Client ID</label>
+          <input 
+            type="text" 
+            formControlName="clientId" 
+            placeholder="client_id generado en SOL"
+            class="input-field"
+          >
+          <small *ngIf="credencialesForm.get('clientId')?.invalid && credencialesForm.get('clientId')?.touched" 
+                 class="error">
+            Required (mín. 10 caracteres)
+          </small>
+        </div>
+
+        <div class="input-wrapper">
+          <label>Client Secret</label>
+          <input 
+            type="password" 
+            formControlName="clientSecret" 
+            placeholder="client_secret generado en SOL"
+            class="input-field"
+          >
+          <small *ngIf="credencialesForm.get('clientSecret')?.invalid && credencialesForm.get('clientSecret')?.touched" 
+                 class="error">
+            Required (mín. 10 caracteres)
+          </small>
+        </div>
+
+        <div class="button-group">
+          <button 
+            type="button" 
+            (click)="generarToken()"
+            [disabled]="loadingToken || !credencialesForm.valid"
+            class="btn btn-primary"
+          >
+            <span *ngIf="loadingToken">⏳ Generando token...</span>
+            <span *ngIf="!loadingToken">🔓 Generar Token</span>
+          </button>
+
+          <button 
+            type="button" 
+            (click)="saveCredentials()"
+            class="btn btn-secondary"
+          >
+            💾 Guardar Credenciales
+          </button>
+        </div>
+      </form>
+
+      <!-- Respuesta de Token -->
+      <div *ngIf="tokenError" class="alert alert-error">
+        {{ tokenError }}
+      </div>
+
+      <div *ngIf="tokenResponse" class="alert alert-success">
+        <h3>✅ Token Generado Exitosamente</h3>
+        <div class="token-info">
+          <p><strong>Token:</strong> <code>{{ token | slice:0:50 }}...</code></p>
+          <p><strong>Tipo:</strong> {{ tokenResponse.token_type }}</p>
+          <p><strong>Expira en:</strong> {{ tokenResponse.expires_in }} segundos ({{ (tokenResponse.expires_in / 3600) | number:'1.0-0' }} horas)</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO: VALIDACIÓN DE COMPROBANTE -->
+    <div class="panel validacion-panel">
+      <h2>Paso 2️⃣: Validar Comprobante</h2>
+      <p class="info">
+        📌 Ingresa los datos del comprobante (Factura o Boleta) que deseas consultar
+      </p>
+
+      <form [formGroup]="comprobanteForm" class="form-group">
+        <!-- RUC Consultante -->
+        <div class="input-wrapper">
+          <label>RUC del Consultante (Tu RUC)</label>
+          <input 
+            type="text" 
+            formControlName="rucConsultante" 
+            placeholder="20123456789"
+            maxlength="11"
+            class="input-field"
+          >
+          <small *ngIf="comprobanteForm.get('rucConsultante')?.invalid && comprobanteForm.get('rucConsultante')?.touched" 
+                 class="error">
+            Debe ser 11 dígitos
+          </small>
+        </div>
+
+        <!-- Datos del Comprobante -->
+        <div class="row-2cols">
+          <div class="input-wrapper">
+            <label>Tipo de Comprobante</label>
+            <select formControlName="codComp" class="input-field">
+              <option *ngFor="let tipo of tiposComprobante" [value]="tipo.code">
+                {{ tipo.code }} - {{ tipo.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="input-wrapper">
+            <label>Serie</label>
+            <input 
+              type="text" 
+              formControlName="numeroSerie" 
+              placeholder="F001 o B001"
+              maxlength="4"
+              class="input-field"
+            >
+          </div>
+        </div>
+
+        <!-- RUC del Emisor -->
+        <div class="input-wrapper">
+          <label>RUC del Emisor (Empresa que emitió)</label>
+          <input 
+            type="text" 
+            formControlName="numRuc" 
+            placeholder="20123456789"
+            maxlength="11"
+            class="input-field"
+          >
+          <small *ngIf="comprobanteForm.get('numRuc')?.invalid && comprobanteForm.get('numRuc')?.touched" 
+                 class="error">
+            Debe ser 11 dígitos
+          </small>
+        </div>
+
+        <!-- Número y Fecha -->
+        <div class="row-2cols">
+          <div class="input-wrapper">
+            <label>Número del Comprobante</label>
+            <input 
+              type="number" 
+              formControlName="numero" 
+              placeholder="1, 2, 3, ..."
+              class="input-field"
+            >
+            <small *ngIf="comprobanteForm.get('numero')?.invalid && comprobanteForm.get('numero')?.touched" 
+                   class="error">
+              Número válido requerido
+            </small>
+          </div>
+
+          <div class="input-wrapper">
+            <label>Fecha de Emisión (dd/mm/yyyy)</label>
+            <input 
+              type="text" 
+              formControlName="fechaEmision" 
+              placeholder="25/12/2024"
+              class="input-field"
+            >
+          </div>
+        </div>
+
+        <!-- Monto -->
+        <div class="input-wrapper">
+          <label>Monto Total (Solo para electrónico)</label>
+          <input 
+            type="text" 
+            formControlName="monto" 
+            placeholder="1000.00"
+            class="input-field"
+          >
+          <small *ngIf="comprobanteForm.get('monto')?.invalid && comprobanteForm.get('monto')?.touched" 
+                 class="error">
+            Formato: 1000.00
+          </small>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="button-group">
+          <button 
+            type="button" 
+            (click)="validarComprobante()"
+            [disabled]="loadingValidation || !comprobanteForm.valid || !token"
+            class="btn btn-primary"
+          >
+            <span *ngIf="loadingValidation">⏳ Validando...</span>
+            <span *ngIf="!loadingValidation">🔍 Validar Comprobante</span>
+          </button>
+
+          <button 
+            type="button" 
+            (click)="usarEjemplo()"
+            class="btn btn-info"
+          >
+            📋 Usar Ejemplo
+          </button>
+
+          <button 
+            type="button" 
+            (click)="limpiar()"
+            class="btn btn-secondary"
+          >
+            🗑️ Limpiar
+          </button>
+        </div>
+      </form>
+
+      <!-- Error de Validación -->
+      <div *ngIf="validationError" class="alert alert-error">
+        {{ validationError }}
+      </div>
+
+      <!-- Respuesta de Validación -->
+      <div *ngIf="validationResponse" class="alert" [ngClass]="validationResponse.success ? 'alert-success' : 'alert-warning'">
+        <h3>{{ validationResponse.success ? '✅ Consulta Exitosa' : '⚠️ Consulta Completada' }}</h3>
+        <p class="message">{{ validationResponse.message }}</p>
+
+        <div *ngIf="validationResponse.data" class="response-data">
+          <div class="data-row">
+            <span class="label">Estado del Comprobante:</span>
+            <span class="value">{{ getEstadoDescripcion(validationResponse.data.estadoCp) }}</span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Estado del RUC:</span>
+            <span class="value">{{ getEstadoRucDescripcion(validationResponse.data.estadoRuc) }}</span>
+          </div>
+
+          <div class="data-row">
+            <span class="label">Condición Domiciliaria:</span>
+            <span class="value">{{ getCondDomiDescripcion(validationResponse.data.condDomiRuc) }}</span>
+          </div>
+
+          <div *ngIf="validationResponse.data.Observaciones && validationResponse.data.Observaciones.length > 0" class="data-row">
+            <span class="label">Observaciones:</span>
+            <div class="observaciones">
+              <p *ngFor="let obs of validationResponse.data.Observaciones">📌 {{ obs }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="validationResponse.errorCode" class="error-code">
+          <strong>Código de Error:</strong> {{ validationResponse.errorCode }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERENCIAS -->
+  <div class="reference-section">
+    <h3>📖 Referencias del Manual SUNAT</h3>
+    <ul>
+      <li><strong>Generación de Credenciales:</strong> SUNAT SOL → Empresas → Comprobantes de Pago → Credenciales de API</li>
+      <li><strong>Generación de Token:</strong> POST a <code>https://api-seguridad.sunat.gob.pe/v1/clientesextranet/{{ '{' }}client_id{{ '}' }}/oauth2/token/</code></li>
+      <li><strong>Validación de Comprobante:</strong> POST a <code>https://api.sunat.gob.pe/v1/contribuyente/contribuyentes/{{ '{' }}RUC{{ '}' }}/validarcomprobante</code></li>
+      <li><strong>Tipos de Comprobante:</strong> 01=Factura, 03=Boleta, 04=Liquidación, 07=Nota Crédito, 08=Nota Débito</li>
+    </ul>
+  </div>
+</div>

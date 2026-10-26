@@ -1,0 +1,219 @@
+<div class="admin-dashboard-page">
+  <section class="admin-hero">
+    <div class="hero-left">
+      <span class="eyebrow">Panel administrativo global</span>
+      <h1>Control total de Omnicanal</h1>
+      <p>Supervisa usuarios, suscripciones, comisiones, ventas globales e indicadores reales de la plataforma.</p>
+
+      <div class="admin-user-pill">
+        <span class="avatar">👑</span>
+        <div>
+          <strong>{{ usuarioActual?.nombreUsuario || 'Administrador' }}</strong>
+          <small>{{ usuarioActual?.email }} · ADMINISTRADOR_GLOBAL</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn btn-light" (click)="navegarA('/administrar-usuarios')">👥 Administrar usuarios</button>
+      <button class="btn btn-primary" (click)="cargarResumen()">🔄 Actualizar panel</button>
+    </div>
+  </section>
+
+  <div class="loading-card" *ngIf="loading">
+    <div class="spinner"></div>
+    <strong>Cargando información global...</strong>
+    <p>Consultando usuarios, ventas, suscripciones y comisiones reales desde la base de datos.</p>
+  </div>
+
+  <div class="warning-card" *ngIf="!loading && error">
+    <strong>⚠️ Revisión pendiente</strong>
+    <p>{{ error }}</p>
+    <button class="btn btn-primary" (click)="cargarResumen()">Intentar otra vez</button>
+  </div>
+
+  <main *ngIf="!loading" class="admin-content">
+    <section class="income-hero">
+      <div>
+        <span>Ingresos reales de plataforma · {{ resumen.mes }}</span>
+        <h2>{{ dinero(resumen.ingresosPlataformaMes) }}</h2>
+        <p>Comisiones del {{ porcentaje(resumen.comisionPlataformaPct) }} sobre ventas + suscripciones activas.</p>
+      </div>
+
+      <div class="income-breakdown">
+        <article>
+          <small>Comisiones del mes</small>
+          <strong>{{ dinero(resumen.comisionesMes) }}</strong>
+        </article>
+        <article>
+          <small>Suscripciones activas</small>
+          <strong>{{ dinero(resumen.suscripcionesMes) }}</strong>
+        </article>
+        <article>
+          <small>Ventas brutas mes</small>
+          <strong>{{ dinero(resumen.ventasBrutasMes) }}</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="metric-grid">
+      <article class="metric-card metric-blue">
+        <span>Usuarios totales</span>
+        <strong>{{ resumen.totalUsuarios }}</strong>
+        <small>{{ resumen.usuariosActivos }} activos · {{ resumen.usuariosBloqueados }} bloqueados</small>
+      </article>
+
+      <article class="metric-card metric-green">
+        <span>Emprendedores activos</span>
+        <strong>{{ resumen.emprendedoresActivos }}</strong>
+        <small>{{ resumen.administradores }} administradores globales</small>
+      </article>
+
+      <article class="metric-card metric-purple">
+        <span>Ventas históricas</span>
+        <strong>{{ resumen.totalVentas }}</strong>
+        <small>{{ resumen.ventasHoy }} ventas hoy</small>
+      </article>
+
+      <article class="metric-card metric-orange">
+        <span>Ticket promedio</span>
+        <strong>{{ dinero(resumen.ticketPromedioGlobal) }}</strong>
+        <small>Promedio global del mes</small>
+      </article>
+
+      <article class="metric-card metric-cyan">
+        <span>Productos</span>
+        <strong>{{ resumen.totalProductos }}</strong>
+        <small>Registrados por todos los emprendedores</small>
+      </article>
+
+      <article class="metric-card metric-slate">
+        <span>Valor inventario</span>
+        <strong>{{ dinero(resumen.valorInventarioGlobal) }}</strong>
+        <small>Valorizado por costo</small>
+      </article>
+
+      <article class="metric-card metric-red">
+        <span>Importaciones</span>
+        <strong>{{ resumen.totalImportaciones }}</strong>
+        <small>Operaciones registradas</small>
+      </article>
+
+      <article class="metric-card metric-lime">
+        <span>Utilidad emprendedores</span>
+        <strong>{{ dinero(resumen.utilidadEmprendedoresMes) }}</strong>
+        <small>Ventas menos costos calculados</small>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel-card">
+        <div class="panel-title">
+          <div>
+            <span>Suscripciones reales</span>
+            <h3>Ingresos mensuales por planes</h3>
+          </div>
+          <strong class="panel-total">{{ dinero(resumen.suscripcionesMes) }}</strong>
+        </div>
+
+        <div class="table-wrap" *ngIf="resumen.suscripcionesDetalle.length > 0">
+          <table>
+            <thead>
+              <tr>
+                <th>Plan</th>
+                <th>Usuarios</th>
+                <th>Precio</th>
+                <th>Total mensual</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plan of resumen.suscripcionesDetalle">
+                <td><strong>{{ plan.plan }}</strong></td>
+                <td>{{ plan.cantidad }}</td>
+                <td>{{ dinero(plan.precioUnitario) }}</td>
+                <td><strong>{{ dinero(plan.totalMensual) }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="empty" *ngIf="resumen.suscripcionesDetalle.length === 0">
+          No hay suscripciones activas registradas.
+        </div>
+      </article>
+
+      <article class="panel-card">
+        <div class="panel-title">
+          <div>
+            <span>Ranking comercial</span>
+            <h3>Top emprendedores por ventas</h3>
+          </div>
+        </div>
+
+        <div class="empty" *ngIf="resumen.topEmprendedores.length === 0">Aún no hay ventas del mes.</div>
+
+        <div class="ranking-list" *ngIf="resumen.topEmprendedores.length > 0">
+          <div class="ranking-row" *ngFor="let item of resumen.topEmprendedores; let i = index">
+            <div class="rank">{{ i + 1 }}</div>
+            <div class="rank-info">
+              <strong>{{ item.nombreUsuario }}</strong>
+              <small>{{ item.email }} · {{ item.plan }}</small>
+            </div>
+            <div class="rank-money">
+              <strong>{{ dinero(item.totalVendido) }}</strong>
+              <small>Comisión {{ dinero(item.comisionGenerada) }}</small>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <article class="panel-card">
+        <div class="panel-title">
+          <div>
+            <span>Actividad reciente</span>
+            <h3>Últimos usuarios registrados</h3>
+          </div>
+          <button class="link-btn" (click)="navegarA('/administrar-usuarios')">Ver todos →</button>
+        </div>
+
+        <div class="empty" *ngIf="resumen.ultimosUsuarios.length === 0">No hay usuarios recientes.</div>
+
+        <div class="simple-list" *ngIf="resumen.ultimosUsuarios.length > 0">
+          <div class="simple-row" *ngFor="let usuario of resumen.ultimosUsuarios">
+            <div>
+              <strong>{{ usuario.nombreUsuario }}</strong>
+              <small>{{ usuario.email }}</small>
+            </div>
+            <span class="badge">{{ usuario.tipoUsuario }}</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="panel-card">
+        <div class="panel-title">
+          <div>
+            <span>Ventas globales</span>
+            <h3>Últimas ventas registradas</h3>
+          </div>
+        </div>
+
+        <div class="empty" *ngIf="resumen.ultimasVentas.length === 0">Aún no hay ventas registradas.</div>
+
+        <div class="simple-list" *ngIf="resumen.ultimasVentas.length > 0">
+          <div class="simple-row" *ngFor="let venta of resumen.ultimasVentas">
+            <div>
+              <strong>{{ venta.numeroVenta }} · {{ venta.cliente }}</strong>
+              <small>{{ venta.emprendedor }}</small>
+            </div>
+            <div class="money-right">
+              <strong>{{ dinero(venta.total) }}</strong>
+              <small>Comisión {{ dinero(venta.comision) }}</small>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</div>
