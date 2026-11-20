@@ -4,7 +4,7 @@ Write-Host "=====================================================`nPRUEBAS CRUD 
 
 # TEST 1: LOGIN
 Write-Host "`n[TEST 1] LOGIN" -ForegroundColor Yellow
-$loginPayload = @{email="juan@omnicanal.pe"; password="password123"} | ConvertTo-Json
+$loginPayload = @{email="juan@omnicanal.pe"; password="Demo1234"} | ConvertTo-Json
 
 try {
     $loginResp = Invoke-WebRequest -Uri "$ApiBase/auth/login" -Method POST -ContentType "application/json" -Body $loginPayload -UseBasicParsing -ErrorAction Stop

@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -7,7 +8,7 @@ import { Canal } from '../models/canal.model';
   providedIn: 'root'
 })
 export class CanalService {
-  private apiUrl = 'http://localhost:8080/api/canales';
+  private apiUrl = `${environment.apiUrl}/canales`;
 
   constructor(private http: HttpClient) { }
 

@@ -4,7 +4,6 @@ import Backendcom.example.Backend.entity.Usuario;
 import Backendcom.example.Backend.enums.EstadoUsuario;
 import Backendcom.example.Backend.enums.TipoUsuario;
 import Backendcom.example.Backend.repository.UsuarioRepository;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,10 +42,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         String rol = (usuario.getTipoUsuario() == null ? TipoUsuario.EMPRENDEDOR : usuario.getTipoUsuario()).name();
 
-        return User.builder()
-                .username(usuario.getEmail())
-                .password(usuario.getPassword())
-                .authorities(List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + rol)))
-                .build();
+        return new UsuarioPrincipal(
+                usuario.getIdUsuario(),
+                usuario.getEmail(),
+                usuario.getPassword(),
+                List.of(new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + rol)));
     }
 }

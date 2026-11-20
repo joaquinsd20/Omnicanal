@@ -11,7 +11,7 @@ Write-Host "====================================================================
 Write-Host "`n[TEST 1] LOGIN" -ForegroundColor Yellow
 $loginPayload = @{
     email = "juan@omnicanal.pe"
-    password = "password123"
+    password = "Demo1234"
 } | ConvertTo-Json
 
 try {

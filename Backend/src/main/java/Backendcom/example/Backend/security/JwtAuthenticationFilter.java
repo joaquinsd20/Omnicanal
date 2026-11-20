@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Filtro que se ejecuta una vez por petición. Extrae el token del header
@@ -27,6 +29,8 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+    /** Rutas tipo /productos/usuario/{id}: solo el propio usuario o un administrador. */
+    private static final Pattern RUTA_POR_USUARIO = Pattern.compile("/(productos|ventas|canales)/usuario/(\\d+)");
     private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
@@ -50,14 +54,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
+        UsuarioPrincipal principalAutenticado = null;
 
         try {
             final String email = jwtService.extractUsername(jwt);
-            logger.debug("JWT Filter: Extracted email = {}", email);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                logger.debug("JWT Filter: Loaded UserDetails, authorities = {}", userDetails.getAuthorities());
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
@@ -65,18 +68,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
-                    logger.debug("JWT Filter: Authentication set successfully with authorities = {}", userDetails.getAuthorities());
+                    if (userDetails instanceof UsuarioPrincipal principal) {
+                        principalAutenticado = principal;
+                    }
                 } else {
-                    logger.warn("JWT Filter: Token validation failed for email = {}", email);
+                    logger.warn("JWT Filter: token inválido");
                 }
             }
-        } catch (JwtException | IllegalArgumentException ex) {
-            // Token inválido/expirado/manipulado: no autenticamos.
+        } catch (JwtException | IllegalArgumentException
+                 | org.springframework.security.core.userdetails.UsernameNotFoundException ex) {
+            // Token inválido/expirado/manipulado o usuario bloqueado: no autenticamos.
             // La respuesta 401 la produce el EntryPoint configurado en SecurityConfig.
-            logger.debug("JWT Filter: JWT exception = {}", ex.getMessage());
+            logger.debug("JWT Filter: {}", ex.getMessage());
             SecurityContextHolder.clearContext();
         }
 
-        filterChain.doFilter(request, response);
+        if (principalAutenticado == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (!puedeAccederRutaDeUsuario(request, principalAutenticado)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "No puedes acceder a datos de otro usuario.");
+            return;
+        }
+
+        // El id del usuario siempre sale del token, nunca del cliente.
+        filterChain.doFilter(new UserIdHeaderRequestWrapper(request, principalAutenticado.getIdUsuario()), response);
+    }
+
+    private boolean puedeAccederRutaDeUsuario(HttpServletRequest request, UsuarioPrincipal principal) {
+        Matcher m = RUTA_POR_USUARIO.matcher(request.getRequestURI());
+        if (!m.find()) {
+            return true;
+        }
+        boolean esAdmin = principal.getAuthorities().stream().anyMatch(a ->
+                a.getAuthority().equals("ROLE_ADMINISTRADOR") || a.getAuthority().equals("ROLE_ADMINISTRADOR_GLOBAL"));
+        return esAdmin || m.group(2).equals(String.valueOf(principal.getIdUsuario()));
     }
 }

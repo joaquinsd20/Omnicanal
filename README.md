@@ -16,7 +16,7 @@
 
 ## 🛠️ Stack Tecnológico
 
-- **Frontend**: Angular 17+ (Standalone Components)
+- **Frontend**: Angular 21 (Standalone Components, lazy loading)
 - **Backend**: Spring Boot 4.0.6
 - **Base de Datos**: MySQL 8.0
 - **Java**: JDK 17 (LTS)
@@ -37,12 +37,12 @@ Proyecto/
 │   │   └── BackendApplication.java   # Clase principal
 │   ├── src/main/resources/
 │   │   ├── application.properties    # Configuración MySQL
-│   │   ├── omnicanal_db.sql         # Script SQL (13 tablas)
+│   │   ├── schema.sql / data.sql     # Esquema y datos demo (se ejecutan al arrancar)
 │   │   └── DER_OMNICANAL.md         # Diagrama Entidad-Relación
 │   ├── pom.xml                      # Dependencias Maven
 │   └── INSTRUCCIONES_BD.md          # Guía de instalación BD
 │
-└── Omnicanal/                         # Angular Frontend
+└── Frontend/                          # Angular Frontend
     ├── src/app/
     │   ├── components/
     │   │   ├── login/               # Login & Registro
@@ -68,80 +68,95 @@ Proyecto/
 
 ---
 
-## 🚀 Guía de Instalación y Ejecución
+## 🌐 Demo en vivo
 
-### Requisitos Previos
+- **App:** https://omnicanal.vercel.app
+- **API:** https://omnicanal-api.onrender.com/api/health
+- **Cuenta demo:** `juan@omnicanal.pe` / `Demo1234` (o el botón *Probar con la cuenta demo* del login)
 
-- **Node.js 18+** y npm
-- **Java JDK 17+**
-- **Maven 3.8+**
-- **MySQL 8.0+**
+> El backend está en el plan gratuito de Render y se duerme tras 15 min sin uso: la primera petición puede tardar hasta un minuto.
 
-### Paso 1: Clonar/Preparar el Proyecto
+### Arquitectura de despliegue
 
-```bash
-cd c:\Users\CompuMorillas\Desktop\Proyecto
-```
-
-### Paso 2: Configurar MySQL y BD
-
-**A) Crear la base de datos ejecutando el script SQL:**
-
-```bash
-mysql -u root -pF20032512@aex < Backend/src/main/resources/omnicanal_db.sql
-```
-
-**B) Verificar que se crearon las 13 tablas:**
-
-```bash
-mysql -u root -pF20032512@aex
-USE omnicanal_db;
-SHOW TABLES;
-```
-
-### Paso 3: Ejecutar Backend (Spring Boot)
-
-```bash
-cd Backend
-
-# Compilar y ejecutar
-./mvnw clean spring-boot:run
-
-# O con Maven instalado globalmente
-mvn clean spring-boot:run
-```
-
-**Backend estará disponible en:** `http://localhost:8080/api`
-
-### Paso 4: Ejecutar Frontend (Angular)
-
-```bash
-cd Omnicanal
-
-# Instalar dependencias
-npm install
-
-# Ejecutar servidor de desarrollo
-ng serve
-
-# O con npm
-npm start
-```
-
-**Frontend estará disponible en:** `http://localhost:4200`
+| Capa | Servicio | Detalle |
+|---|---|---|
+| Frontend | Vercel | Angular 21, rutas lazy, headers de seguridad en `Frontend/vercel.json` |
+| Backend | Render (Docker) | Spring Boot 4 + Java 17, `Backend/Dockerfile`, health check en `/api/health` |
+| Base de datos | Aiven for MySQL | MySQL 8 gestionado con SSL; el esquema y los datos demo se crean solos al arrancar |
 
 ---
 
-## 📊 Datos de Prueba
+## 🚀 Cómo correrlo en local
 
-**Usuario de Prueba (registrado automáticamente):**
-```
-Email: juan@omnicanal.pe
-Contraseña: hashed_password_123
-Nombre: Juan Comerciante
+### Requisitos
+
+- Node.js 20+ y npm
+- Java JDK 17+
+- MySQL 8.0+
+
+### 1. Base de datos
+
+Crea una base vacía; las tablas y los datos demo se crean solos al arrancar el backend (`schema.sql` + `data.sql`, idempotentes).
+
+```sql
+CREATE DATABASE omnicanal_db;
 ```
 
-**O crea un nuevo usuario en la pantalla de registro.**
+### 2. Backend (Spring Boot)
+
+Copia `Backend/.env.example`, completa los valores y expórtalos como variables de entorno (o configúralos en tu IDE):
+
+```bash
+cd Backend
+export DB_URL="jdbc:mysql://localhost:3306/omnicanal_db?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false"
+export DB_USERNAME=root
+export DB_PASSWORD=tu_password
+export JWT_SECRET=$(openssl rand -base64 64)
+./mvnw spring-boot:run
+```
+
+API disponible en `http://localhost:8080/api`.
+
+### 3. Frontend (Angular)
+
+```bash
+cd Frontend
+npm install
+npm start
+```
+
+App disponible en `http://localhost:4200`. La URL del API se define en `src/environments/environment.ts` (local) y `environment.prod.ts` (producción).
+
+---
+
+## ☁️ Cómo desplegar
+
+### Variables de entorno del backend (Render)
+
+| Variable | Ejemplo / descripción |
+|---|---|
+| `DB_URL` | `jdbc:mysql://HOST:PUERTO/defaultdb?sslMode=REQUIRED&serverTimezone=UTC` |
+| `DB_USERNAME` / `DB_PASSWORD` | Credenciales de Aiven |
+| `JWT_SECRET` | `openssl rand -base64 64` (nunca la subas a Git) |
+| `CORS_ALLOWED_ORIGINS` | `https://omnicanal.vercel.app` (separa varias con coma) |
+| `SPRING_SQL_INIT_MODE` | `always` crea lo que falte al arrancar; `never` para no tocar la BD |
+
+Render: *New Web Service* → repo → *Root Directory* `Backend` → *Runtime* Docker → *Health Check Path* `/api/health`.
+
+### Frontend (Vercel)
+
+*Add New Project* → repo → *Root Directory* `Frontend`. `vercel.json` ya define build, salida, rutas SPA y headers. Si cambia la URL del backend, actualízala en `environment.prod.ts` y en el `connect-src` del CSP de `vercel.json`.
+
+---
+
+## 📊 Datos de prueba
+
+| Rol | Email | Contraseña |
+|---|---|---|
+| Emprendedor (demo pública) | `juan@omnicanal.pe` | `Demo1234` |
+| Administrador global | `admin@omnicanal.pe` | Privada (no se publica) |
+
+El registro público siempre crea cuentas de tipo **Emprendedor**; los administradores solo se crean desde el panel de un administrador global.
 
 ---
 
@@ -210,20 +225,14 @@ Nombre: Juan Comerciante
 
 ---
 
-## 🔒 Configuración Actual
+## 🔒 Seguridad
 
-**Backend (`application.properties`):**
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/omnicanal_db?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=F20032512@aex
-spring.jpa.hibernate.ddl-auto=validate
-```
-
-**Frontend (`environment.ts`):**
-```typescript
-apiUrl: 'http://localhost:8080/api'
-```
+- Secretos (BD, JWT) solo en variables de entorno; nada sensible en el código.
+- Contraseñas con BCrypt; la contraseña nunca se devuelve en las respuestas.
+- JWT stateless; el id de usuario (`X-User-Id`) siempre se toma del token, no del cliente, así cada usuario solo ve sus datos.
+- Roles validados en el backend con `@PreAuthorize`; el registro público no permite elegir rol.
+- CORS limitado al dominio del frontend; headers CSP, HSTS, X-Frame-Options y Referrer-Policy.
+- Límite de intentos en login y registro (5 cada 15 min por IP).
 
 ---
 

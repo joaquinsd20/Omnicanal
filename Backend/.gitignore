@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Entorno y logs ###
+.env
+*.log
+backend_output.txt

@@ -46,15 +46,9 @@ public class AuthService {
             throw new BusinessException("Ya existe una cuenta con ese RUC.");
         }
 
-        // NUEVO: Usar tipoUsuario del request o EMPRENDEDOR por defecto
+        // El registro público SIEMPRE crea emprendedores. Los administradores solo
+        // se crean desde /usuarios/admin/crear por otro administrador.
         TipoUsuario tipoUsuario = TipoUsuario.EMPRENDEDOR;
-        if (request.getTipoUsuario() != null && !request.getTipoUsuario().isBlank()) {
-            try {
-                tipoUsuario = TipoUsuario.valueOf(request.getTipoUsuario().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new BusinessException("Tipo de usuario inválido: " + request.getTipoUsuario());
-            }
-        }
 
         Usuario usuario = Usuario.builder()
                 .nombreUsuario(request.getNombreUsuario())

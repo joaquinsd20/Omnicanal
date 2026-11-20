@@ -1,28 +1,32 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { ProductosComponent } from './components/productos/productos.component';
-import { VentasComponent } from './components/ventas/ventas.component';
-import { FinancieroComponent } from './components/financiero/financiero.component';
-import { KardexComponent } from './components/kardex/kardex.component';
-import { SunatTestComponent } from './components/sunat-test/sunat-test.component';
-import { ImportacionComponent } from './components/importacion/importacion.component';
-import { AdministrarUsuariosComponent } from './components/administrar-usuarios/administrar-usuarios.component';
-import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
 import { authGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 
+// Cada pantalla se carga bajo demanda (lazy loading) para que la primera carga sea más rápida.
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
-  { path: 'admin-dashboard', component: AdminDashboardComponent, canActivate: [authGuard, AdminGuard] },
-  { path: 'productos', component: ProductosComponent, canActivate: [authGuard] },
-  { path: 'ventas', component: VentasComponent, canActivate: [authGuard] },
-  { path: 'financiero', component: FinancieroComponent, canActivate: [authGuard] },
-  { path: 'importaciones', component: ImportacionComponent, canActivate: [authGuard] },
-  { path: 'kardex', component: KardexComponent, canActivate: [authGuard] },
-  { path: 'sunat-test', component: SunatTestComponent, canActivate: [authGuard] },
-  { path: 'administrar-usuarios', component: AdministrarUsuariosComponent, canActivate: [AdminGuard] },
-  { path: '**', redirectTo: '/login' }
+  { path: 'login', component: LoginComponent, title: 'Iniciar sesión | Omnicanal' },
+  { path: 'privacidad', title: 'Privacidad | Omnicanal',
+    loadComponent: () => import('./components/privacidad/privacidad.component').then(m => m.PrivacidadComponent) },
+  { path: 'dashboard', canActivate: [authGuard], title: 'Dashboard | Omnicanal',
+    loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+  { path: 'admin-dashboard', canActivate: [authGuard, AdminGuard], title: 'Panel admin | Omnicanal',
+    loadComponent: () => import('./components/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent) },
+  { path: 'productos', canActivate: [authGuard], title: 'Productos | Omnicanal',
+    loadComponent: () => import('./components/productos/productos.component').then(m => m.ProductosComponent) },
+  { path: 'ventas', canActivate: [authGuard], title: 'Ventas | Omnicanal',
+    loadComponent: () => import('./components/ventas/ventas.component').then(m => m.VentasComponent) },
+  { path: 'financiero', canActivate: [authGuard], title: 'Financiero | Omnicanal',
+    loadComponent: () => import('./components/financiero/financiero.component').then(m => m.FinancieroComponent) },
+  { path: 'importaciones', canActivate: [authGuard], title: 'Importaciones | Omnicanal',
+    loadComponent: () => import('./components/importacion/importacion.component').then(m => m.ImportacionComponent) },
+  { path: 'kardex', canActivate: [authGuard], title: 'Kardex | Omnicanal',
+    loadComponent: () => import('./components/kardex/kardex.component').then(m => m.KardexComponent) },
+  { path: 'sunat-test', canActivate: [authGuard], title: 'SUNAT | Omnicanal',
+    loadComponent: () => import('./components/sunat-test/sunat-test.component').then(m => m.SunatTestComponent) },
+  { path: 'administrar-usuarios', canActivate: [authGuard, AdminGuard], title: 'Usuarios | Omnicanal',
+    loadComponent: () => import('./components/administrar-usuarios/administrar-usuarios.component').then(m => m.AdministrarUsuariosComponent) },
+  { path: '**', title: 'Página no encontrada | Omnicanal',
+    loadComponent: () => import('./components/not-found/not-found.component').then(m => m.NotFoundComponent) }
 ];

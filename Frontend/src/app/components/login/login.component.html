@@ -81,9 +81,17 @@
           {{ loading ? 'Validando acceso...' : 'Ingresar al sistema' }}
         </button>
 
+        <div class="info-message" *ngIf="loading && servidorLento" role="status">
+          El servidor gratuito se está activando. La primera carga puede tardar hasta un minuto.
+        </div>
+
+        <button type="button" class="btn-demo full" (click)="usarCuentaDemo()" [disabled]="loading">
+          Probar con la cuenta demo
+        </button>
+
         <p class="toggle-text">
           ¿No tienes cuenta?
-          <a (click)="toggleForm()">Regístrate aquí</a>
+          <a href="javascript:void(0)" (click)="toggleForm()">Regístrate aquí</a>
         </p>
       </form>
 
@@ -154,13 +162,6 @@
           <input type="text" id="razon" formControlName="razonSocial" placeholder="Nombre comercial" class="form-input" />
         </div>
 
-        <div class="form-group">
-          <label for="tipoUsuario">Tipo de usuario</label>
-          <select id="tipoUsuario" formControlName="tipoUsuario" class="form-input">
-            <option value="EMPRENDEDOR">Emprendedor</option>
-            <option value="ADMINISTRADOR_GLOBAL">Administrador Global (OG)</option>
-          </select>
-        </div>
 
         <div class="error-message" *ngIf="error">{{ error }}</div>
 
@@ -170,9 +171,13 @@
 
         <p class="toggle-text">
           ¿Ya tienes cuenta?
-          <a (click)="toggleForm()">Inicia sesión</a>
+          <a href="javascript:void(0)" (click)="toggleForm()">Inicia sesión</a>
         </p>
       </form>
+
+      <p class="legal-links">
+        <a routerLink="/privacidad">Privacidad y aviso legal</a>
+      </p>
     </div>
   </section>
 </div>

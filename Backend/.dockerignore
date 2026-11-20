@@ -1,0 +1,7 @@
+target/
+*.log
+backend_output.txt
+.idea/
+.vscode/
+*.iml
+.env

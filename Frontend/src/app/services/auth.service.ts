@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
@@ -8,7 +9,7 @@ import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.mode
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/api/auth';
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   private readonly TOKEN_KEY = 'omnicanal_token';
   private readonly USER_KEY = 'omnicanal_usuario';

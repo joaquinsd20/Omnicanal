@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
@@ -36,7 +37,7 @@ export interface SunatValidationResponse {
 export class SunatTestService {
   
   // Usar endpoints del backend (proxy) para evitar CORS
-  private readonly API_BASE = 'http://localhost:8080/api/sunat/test';
+  private readonly API_BASE = `${environment.apiUrl}/sunat/test`;
 
   constructor(private http: HttpClient) {}
 

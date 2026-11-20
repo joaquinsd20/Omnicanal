@@ -1,3 +1,4 @@
+import { environment } from '../../environments/environment';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
@@ -83,8 +84,8 @@ export interface MovimientoInventario {
   providedIn: 'root'
 })
 export class ImportacionService {
-  private apiUrl = 'http://localhost:8080/api/importaciones';
-  private kardexUrl = 'http://localhost:8080/api/kardex';
+  private apiUrl = `${environment.apiUrl}/importaciones`;
+  private kardexUrl = `${environment.apiUrl}/kardex`;
 
   constructor(private http: HttpClient) { }
 

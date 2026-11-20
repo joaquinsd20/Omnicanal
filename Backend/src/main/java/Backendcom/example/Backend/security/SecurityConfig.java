@@ -1,5 +1,6 @@
 package Backendcom.example.Backend.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,10 +37,17 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final UserDetailsServiceImpl userDetailsService;
+    private final LoginRateLimitFilter loginRateLimitFilter;
+
+    /** Orígenes del frontend permitidos (variable CORS_ALLOWED_ORIGINS). */
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
                           JwtAuthenticationEntryPoint authenticationEntryPoint,
-                          UserDetailsServiceImpl userDetailsService) {
+                          UserDetailsServiceImpl userDetailsService,
+                          LoginRateLimitFilter loginRateLimitFilter) {
+        this.loginRateLimitFilter = loginRateLimitFilter;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.authenticationEntryPoint = authenticationEntryPoint;
         this.userDetailsService = userDetailsService;
@@ -52,18 +60,26 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 // Rutas públicas (el context-path /api no cuenta aquí)
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/debug/**").permitAll()  // DEBUG ENDPOINTS
+                .requestMatchers("/health").permitAll()
                 .requestMatchers("/documentacion/**").permitAll()  // Documentación simple de API
                 .requestMatchers("/error").permitAll()
                 // Todo lo demás requiere token válido
                 .anyRequest().authenticated()
             )
+            .headers(headers -> headers
+                .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'none'; frame-ancestors 'none'"))
+                .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).maxAgeInSeconds(31536000))
+                .frameOptions(frame -> frame.deny())
+                .referrerPolicy(ref -> ref.policy(
+                    org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.NO_REFERRER)))
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(ex -> ex
                 .authenticationEntryPoint(authenticationEntryPoint))
             .authenticationProvider(authenticationProvider())
+            .addFilterBefore(loginRateLimitFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -89,12 +105,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        // En desarrollo, permitir cualquier puerto en localhost
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
+        // Solo los dominios configurados (admite patrones, p. ej. https://*-joaquin.vercel.app)
+        config.setAllowedOriginPatterns(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim).filter(o -> !o.isEmpty()).toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-User-Id", "Accept"));
+        config.setMaxAge(3600L);
         config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false); // el JWT viaja en el header, no en cookies
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

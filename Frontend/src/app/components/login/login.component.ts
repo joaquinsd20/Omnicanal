@@ -1,13 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
@@ -19,12 +21,18 @@ export class LoginComponent implements OnInit {
   error = '';
   info = '';
   loading = false;
+  servidorLento = false;
+  private lentoTimer?: ReturnType<typeof setTimeout>;
+
+  /** Cuenta pública de demostración (datos de ejemplo). */
+  private readonly demo = { email: 'juan@omnicanal.pe', password: 'Demo1234' };
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +41,9 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/dashboard']);
       return;
     }
+
+    // Despierta el backend (Render free se duerme tras 15 min sin uso)
+    this.http.get(`${environment.apiUrl}/health`).subscribe({ error: () => {} });
 
     if (this.route.snapshot.queryParamMap.get('sesionExpirada')) {
       this.info = 'Tu sesión expiró. Inicia sesión nuevamente.';
@@ -49,8 +60,7 @@ export class LoginComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       telefono: [''],
       razonSocial: [''],
-      ruc: ['', [Validators.pattern(/^$|^[0-9]{11}$/)]],
-      tipoUsuario: ['EMPRENDEDOR'] // Nuevo: selector de tipo de usuario
+      ruc: ['', [Validators.pattern(/^$|^[0-9]{11}$/)]]
     });
   }
 
@@ -65,12 +75,15 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.iniciarCarga();
     this.authService.login(this.loginForm.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.terminarCarga();
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.error = err?.message || 'Email o contraseña incorrectos';
-        this.loading = false;
+        this.terminarCarga();
       }
     });
   }
@@ -82,14 +95,34 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.loading = true;
+    this.iniciarCarga();
     this.authService.registro(this.registroForm.value).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.terminarCarga();
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.error = err?.message || 'Error al registrarse. Intenta de nuevo.';
-        this.loading = false;
+        this.terminarCarga();
       }
     });
+  }
+
+  usarCuentaDemo(): void {
+    this.loginForm.setValue(this.demo);
+    this.login();
+  }
+
+  private iniciarCarga(): void {
+    this.loading = true;
+    this.servidorLento = false;
+    this.lentoTimer = setTimeout(() => (this.servidorLento = true), 4000);
+  }
+
+  private terminarCarga(): void {
+    this.loading = false;
+    this.servidorLento = false;
+    clearTimeout(this.lentoTimer);
   }
 
   toggleForm(): void {

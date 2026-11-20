@@ -46,7 +46,7 @@ Deberías ver estas **13 tablas**:
 
 ## 📍 Ubicación del Script SQL
 
-**Ruta:** `Backend/src/main/resources/omnicanal_db.sql`
+**Ruta:** `Backend/database/scripts/omnicanal_db.sql`
 
 ---
 
@@ -113,7 +113,7 @@ mysql -u root -p -e "SHOW DATABASES;"
 ## 📚 Archivos Relacionados
 
 - **Diagrama DER:** `Backend/src/main/resources/DER_OMNICANAL.md`
-- **Script SQL:** `Backend/src/main/resources/omnicanal_db.sql`
+- **Script SQL:** `Backend/database/scripts/omnicanal_db.sql`
 - **Configuración Spring:** `Backend/src/main/resources/application.properties`
 
 ---

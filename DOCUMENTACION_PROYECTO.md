@@ -43,7 +43,7 @@ Centralizar la operación comercial de un negocio en una única plataforma, perm
 - Host: localhost:3306
 - Base de datos: omnicanal_db
 - Usuario: root
-- Contraseña: F20032512@aex
+- Contraseña: (definida en la variable de entorno DB_PASSWORD)
 
 #### **Herramientas de Desarrollo**
 - IDE: Visual Studio Code
