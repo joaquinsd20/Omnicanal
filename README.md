@@ -70,7 +70,7 @@ Proyecto/
 
 ## 🌐 Demo en vivo
 
-- **App:** https://omnicanal.vercel.app
+- **App:** https://omnicanal-sooty.vercel.app
 - **API:** https://omnicanal-api.onrender.com/api/health
 - **Cuenta demo:** `juan@omnicanal.pe` / `Demo1234` (o el botón *Probar con la cuenta demo* del login)
 
@@ -138,7 +138,7 @@ App disponible en `http://localhost:4200`. La URL del API se define en `src/envi
 | `DB_URL` | `jdbc:mysql://HOST:PUERTO/defaultdb?sslMode=REQUIRED&serverTimezone=UTC` |
 | `DB_USERNAME` / `DB_PASSWORD` | Credenciales de Aiven |
 | `JWT_SECRET` | `openssl rand -base64 64` (nunca la subas a Git) |
-| `CORS_ALLOWED_ORIGINS` | `https://omnicanal.vercel.app` (separa varias con coma) |
+| `CORS_ALLOWED_ORIGINS` | `https://omnicanal-sooty.vercel.app` (separa varias con coma) |
 | `SPRING_SQL_INIT_MODE` | `always` crea lo que falte al arrancar; `never` para no tocar la BD |
 
 Render: *New Web Service* → repo → *Root Directory* `Backend` → *Runtime* Docker → *Health Check Path* `/api/health`.
