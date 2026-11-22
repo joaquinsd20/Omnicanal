@@ -74,6 +74,13 @@ public class GlobalExceptionHandler {
     }
 
     // ----- 400: argumento inválido -----
+    // ----- 403: rol sin permiso (@PreAuthorize) -----
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ApiError> handleAccessDenied(org.springframework.security.access.AccessDeniedException ex,
+                                                       HttpServletRequest request) {
+        return build(HttpStatus.FORBIDDEN, "Acceso denegado", "No tienes permiso para esta acción.", request);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiError> handleIllegalArgument(IllegalArgumentException ex,
                                                           HttpServletRequest request) {
