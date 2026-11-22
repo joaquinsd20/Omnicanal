@@ -62,17 +62,11 @@
   padding: 22px;
 }
 
-.summary-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 5px;
-  background: var(--primary);
-}
+.summary-card::before { display: none; }
 
-.summary-card.success::before { background: var(--success); }
-.summary-card.warning::before { background: var(--warning); }
-.summary-card.info::before { background: var(--info); }
+.summary-card.success::before { display: none; }
+.summary-card.warning::before { display: none; }
+.summary-card.info::before { display: none; }
 
 .summary-card span {
   display: block;

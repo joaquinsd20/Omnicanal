@@ -61,7 +61,7 @@
         <div class="error-message" *ngIf="error">{{ error }}</div>
 
         <button type="submit" [disabled]="loading || loginForm.invalid" class="btn-primary full">
-          {{ loading ? 'Validando acceso...' : 'Ingresar al sistema' }}
+          {{ loading ? 'Validando acceso…' : 'Ingresar al sistema' }}
         </button>
 
         <div class="info-message" *ngIf="loading && servidorLento()" role="status">
@@ -149,7 +149,7 @@
         <div class="error-message" *ngIf="error">{{ error }}</div>
 
         <button type="submit" [disabled]="loading || registroForm.invalid" class="btn-primary full">
-          {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
+          {{ loading ? 'Creando cuenta…' : 'Crear cuenta' }}
         </button>
 
         <p class="toggle-text">

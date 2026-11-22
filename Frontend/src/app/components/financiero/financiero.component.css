@@ -113,16 +113,10 @@
   overflow: hidden;
 }
 
-.kpi-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 5px;
-  background: var(--primary);
-}
+.kpi-card::before { display: none; }
 
-.kpi-card.success::before { background: var(--success); }
-.kpi-card.danger::before { background: var(--danger); }
+.kpi-card.success::before { display: none; }
+.kpi-card.danger::before { display: none; }
 
 .kpi-card span {
   display: block;
@@ -190,7 +184,7 @@
 .bar-track {
   width: 100%;
   height: 100%;
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--surface-2);
   display: flex;
   align-items: end;
@@ -201,8 +195,8 @@
 .bar {
   width: 100%;
   min-height: 12%;
-  border-radius: 999px;
-  background: var(--primary);
+  border-radius: 4px;
+  background: var(--text-2);
   box-shadow: var(--shadow-soft);
 }
 

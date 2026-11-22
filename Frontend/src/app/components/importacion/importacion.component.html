@@ -209,7 +209,7 @@
         <div class="items-selector">
           <div class="selector-row">
             <select [(ngModel)]="productoSeleccionado" [ngModelOptions]="{standalone: true}" class="form-input">
-              <option [ngValue]="null">Selecciona producto...</option>
+              <option [ngValue]="null">Selecciona producto…</option>
               <option *ngFor="let prod of productos" [ngValue]="prod.idProducto">
                 {{ prod.nombreProducto }} ({{ prod.sku }})
               </option>
@@ -286,7 +286,7 @@
         <div class="form-actions">
           <button type="button" class="btn-ghost" (click)="cerrarFormulario()">Cancelar</button>
           <button type="submit" class="btn-primary" [disabled]="importacionForm.invalid || itemsImportacion.length === 0 || cargando">
-            {{ cargando ? '⏳ Guardando...' : 'Guardar importación' }}
+            {{ cargando ? 'Guardando…' : 'Guardar importación' }}
           </button>
         </div>
       </form>

@@ -61,10 +61,10 @@
   overflow: hidden;
 }
 
-.summary-card::before {display: none;}
+.summary-card::before { display: none; }
 
-.summary-card.warning::before { background: var(--warning); }
-.summary-card.success::before { background: var(--success); }
+.summary-card.warning::before { display: none; }
+.summary-card.success::before { display: none; }
 
 .summary-card span {
   display: block;
@@ -147,7 +147,7 @@
 
 .tabla-importaciones .number {
   text-align: right;
-  font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 13px;
   font-weight: 600;
 }
@@ -350,7 +350,7 @@
 }
 
 .form-input[type="number"] {
-  font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 .form-input.input-error {
@@ -435,7 +435,7 @@
 
 .items-table .number {
   text-align: right;
-  font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 .items-table .center {
@@ -506,7 +506,7 @@
 
 .prorrateo-table .number {
   text-align: right;
-  font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 11px;
 }
 

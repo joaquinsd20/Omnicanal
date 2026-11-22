@@ -63,10 +63,10 @@
   overflow: hidden;
 }
 
-.summary-card::before {display: none;}
+.summary-card::before { display: none; }
 
-.summary-card.warning::before { background: var(--warning); }
-.summary-card.success::before { background: var(--success); }
+.summary-card.warning::before { display: none; }
+.summary-card.success::before { display: none; }
 
 .summary-card span {
   display: block;

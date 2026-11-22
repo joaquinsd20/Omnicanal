@@ -47,7 +47,7 @@
             <input 
               type="text" 
               [(ngModel)]="terminoBusqueda" 
-              placeholder="Ingresa nombre, SKU o categoría..."
+              placeholder="Ingresa nombre, SKU o categoría…"
               (keyup.enter)="buscarProductos()"
               [disabled]="buscando"
               class="search-input"
@@ -57,7 +57,7 @@
               (click)="buscarProductos()"
               [disabled]="buscando"
             >
-              {{ buscando ? '⏳ Buscando...' : 'Buscar' }}
+              {{ buscando ? 'Buscando…' : 'Buscar' }}
             </button>
             <button 
               class="btn-secondary" 
@@ -323,7 +323,7 @@
           <label>Estado</label>
           <select formControlName="estado" class="form-input">
             <option value="activo"><app-icon name="check-circle" />Activo</option>
-            <option value="inactivo">⏸️ Inactivo</option>
+            <option value="inactivo">Inactivo</option>
             <option value="discontinuado">Discontinuado</option>
           </select>
         </div>

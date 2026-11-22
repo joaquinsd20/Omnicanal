@@ -6,7 +6,7 @@
       <p>Panel para gestionar todos los usuarios con acceso al sistema</p>
     </div>
     <button class="btn-refresh" (click)="cargarDatos()" [disabled]="cargando">
-      {{ cargando ? '⏳ Actualizando...' : 'Actualizar' }}
+      {{ cargando ? 'Actualizando…' : 'Actualizar' }}
     </button>
   </div>
 
@@ -226,7 +226,7 @@
         <div class="modal-footer">
           <button type="button" class="btn-cancel" (click)="cerrarModalCrear()">Cancelar</button>
           <button type="submit" class="btn-save" [disabled]="formularioCrear.invalid || cargando">
-            {{ cargando ? '⏳ Guardando...' : 'Crear Usuario' }}
+            {{ cargando ? 'Guardando…' : 'Crear Usuario' }}
           </button>
         </div>
       </form>

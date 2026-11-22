@@ -242,13 +242,7 @@
   overflow: hidden;
 }
 
-.metric-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 5px;
-  background: var(--primary);
-}
+.metric-card::before { display: none; }
 
 .metric-green::before { background: var(--success); }
 .metric-purple::before { background: #7c3aed; }

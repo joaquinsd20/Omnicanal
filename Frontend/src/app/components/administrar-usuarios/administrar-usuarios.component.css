@@ -39,7 +39,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-refresh:hover:not(:disabled) {
@@ -118,7 +118,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
 
@@ -141,7 +141,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
 
@@ -236,7 +236,7 @@
 
 .email {
   color: var(--muted);
-  font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 12px;
 }
 
@@ -297,7 +297,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-icon:hover {
@@ -365,7 +365,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-close:hover {
@@ -403,7 +403,7 @@
   border-radius: 6px;
   font-size: 14px;
   color: var(--text);
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .form-control:focus {
@@ -472,7 +472,7 @@
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .btn-cancel {

@@ -1,7 +1,7 @@
 <div class="container kardex-container">
   <div class="header">
     <div class="header-content">
-      <h1>Kardex - Auditoría de Inventario</h1>
+      <h1>Kardex</h1>
       <p>Historial completo de todos los movimientos de inventario</p>
     </div>
   </div>
@@ -53,7 +53,7 @@
     </div>
 
     <div *ngIf="cargando" class="loading">
-      ⏳ Cargando movimientos...
+      Cargando movimientos…
     </div>
 
     <div *ngIf="!cargando && movimientosFiltrados.length === 0" class="no-datos">

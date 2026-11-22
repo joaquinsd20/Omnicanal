@@ -1,10 +1,4 @@
-.kardex-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: var(--surface-2);
-  border-radius: 8px;
-}
+.kardex-container { max-width: 1200px; margin: 0 auto; padding: 28px 32px 48px; }
 
 .header {
   display: flex;
@@ -15,13 +9,13 @@
 }
 
 .header-content {
-  text-align: center;
+  text-align: left;
   flex: 1;
 }
 
 .header h1 {
   color: var(--text);
-  font-size: 2em;
+  font-size: 22px;
   margin: 0;
 }
 
@@ -38,7 +32,7 @@
   border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
   font-size: 14px;
 }
@@ -123,7 +117,7 @@
   font-size: 0.95em;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   white-space: nowrap;
 }
 
@@ -283,7 +277,7 @@
 }
 
 .referencia {
-  font-family: 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
   font-size: 0.9em;
   color: var(--muted);
 }
@@ -328,7 +322,7 @@
 }
 
 .resumen-card .numero {
-  font-size: 2em;
+  font-size: 22px;
   font-weight: 600;
   margin-bottom: 10px;
 }
