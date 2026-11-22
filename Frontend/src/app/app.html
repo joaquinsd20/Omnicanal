@@ -1,28 +1,54 @@
-<div class="app-container">
-  <nav class="navbar" *ngIf="isAuthenticated()">
-    <div class="navbar-content">
-      <div class="navbar-logo">
-        <strong>🎯 {{ title() }}</strong>
+<div class="shell" [class.shell--auth]="isAuthenticated()">
+  @if (isAuthenticated()) {
+    <aside class="sidebar" [class.open]="showMenu()">
+      <div class="brand">
+        <span class="brand-mark">O</span>
+        <span class="brand-name">{{ title() }}</span>
       </div>
 
-      <div class="navbar-menu" [ngClass]="{'open': showMenu()}">
-        <a routerLink="/dashboard" class="nav-link">📊 Dashboard</a>
-        <a routerLink="/importaciones" class="nav-link">✈️ Importaciones</a>
-        <a routerLink="/kardex" class="nav-link">📋 Kardex</a>
-        <a routerLink="/productos" class="nav-link">🛍️ Productos</a>
-        <a routerLink="/ventas" class="nav-link">💳 Ventas</a>
-        <a routerLink="/financiero" class="nav-link">💰 Financiero</a>
-        <a *ngIf="esAdminGlobal()" routerLink="/administrar-usuarios" class="nav-link admin-link">👮 Usuarios</a>
-        <button (click)="logout()" class="nav-link logout">🚪 Logout</button>
-      </div>
+      <nav class="nav" aria-label="Navegación principal">
+        <span class="nav-section">General</span>
+        <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()"><app-icon name="dashboard" />Dashboard</a>
+        <a routerLink="/financiero" routerLinkActive="active" (click)="closeMenu()"><app-icon name="chart" />Financiero</a>
 
-      <div class="navbar-toggle" (click)="toggleMenu()">☰</div>
+        <span class="nav-section">Operación</span>
+        <a routerLink="/productos" routerLinkActive="active" (click)="closeMenu()"><app-icon name="package" />Productos</a>
+        <a routerLink="/ventas" routerLinkActive="active" (click)="closeMenu()"><app-icon name="cart" />Ventas</a>
+        <a routerLink="/importaciones" routerLinkActive="active" (click)="closeMenu()"><app-icon name="plane" />Importaciones</a>
+        <a routerLink="/kardex" routerLinkActive="active" (click)="closeMenu()"><app-icon name="clipboard" />Kardex</a>
 
-      <div class="navbar-user" *ngIf="currentUser()">
-        {{ currentUser().email }} ({{ currentUser().tipoUsuario }})
+        @if (esAdminGlobal()) {
+          <span class="nav-section">Administración</span>
+          <a routerLink="/admin-dashboard" routerLinkActive="active" (click)="closeMenu()"><app-icon name="shield" />Panel admin</a>
+          <a routerLink="/administrar-usuarios" routerLinkActive="active" (click)="closeMenu()"><app-icon name="users" />Usuarios</a>
+        }
+      </nav>
+
+      <div class="sidebar-footer">
+        @if (currentUser(); as u) {
+          <div class="user">
+            <span class="avatar">{{ (u.nombreUsuario || u.email || '?').charAt(0).toUpperCase() }}</span>
+            <div class="user-meta">
+              <strong>{{ u.nombreUsuario || 'Usuario' }}</strong>
+              <small>{{ u.email }}</small>
+            </div>
+          </div>
+        }
+        <button type="button" class="logout" (click)="logout()"><app-icon name="logout" />Cerrar sesión</button>
       </div>
-    </div>
-  </nav>
+    </aside>
+
+    @if (showMenu()) {
+      <div class="scrim" (click)="closeMenu()"></div>
+    }
+
+    <header class="mobile-bar">
+      <button type="button" class="icon-btn" (click)="toggleMenu()" aria-label="Abrir menú">
+        <app-icon name="menu" [size]="20" />
+      </button>
+      <span class="brand-name">{{ title() }}</span>
+    </header>
+  }
 
   <main class="main-content">
     <router-outlet></router-outlet>

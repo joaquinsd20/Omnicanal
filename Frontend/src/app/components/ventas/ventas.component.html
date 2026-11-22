@@ -2,7 +2,6 @@
 <div class="sales-page app-page">
   <header class="module-header">
     <div class="header-left">
-      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
       <div>
         <span class="eyebrow">Ventas</span>
         <h1>Gestión comercial</h1>
@@ -107,7 +106,7 @@
 
       <form [formGroup]="ventaForm" (ngSubmit)="guardarVenta()" class="professional-form">
         <div class="form-group">
-          <label>🛒 Canal de venta</label>
+          <label>Canal de venta</label>
           <select formControlName="idCanal" class="form-select" [class.input-error]="f['idCanal'].invalid && f['idCanal'].touched">
             <option [value]="null">-- Selecciona un canal --</option>
             <option *ngFor="let canal of canales" [value]="canal.idCanal">
@@ -166,11 +165,11 @@
 
         <!-- SECCIÓN 2: AGREGAR PRODUCTOS -->
         <div class="products-section" style="margin-top: 30px;">
-          <h3 style="margin-bottom: 15px; font-weight: bold; color: #333;">🛒 Agregar Productos</h3>
+          <h3 style="margin-bottom: 15px; font-weight: bold; color: #333;">Agregar Productos</h3>
           
           <!-- Paso 1: Seleccionar categoría -->
           <div class="form-group" style="margin-bottom: 15px;">
-            <label style="font-weight: 600; display: block; margin-bottom: 8px;">📂 Categoría</label>
+            <label style="font-weight: 600; display: block; margin-bottom: 8px;">Categoría</label>
             <select [(ngModel)]="categoriaSeleccionada" (change)="cambiarCategoria(categoriaSeleccionada)" 
                     [ngModelOptions]="{standalone: true}" class="form-select" style="width: 100%;">
               <option [value]="">-- Todas las categorías --</option>
@@ -180,7 +179,7 @@
 
           <!-- Paso 2: Buscar por nombre o SKU -->
           <div class="form-group" style="margin-bottom: 15px; position: relative;">
-            <label style="font-weight: 600; display: block; margin-bottom: 8px;">🔍 Buscar Producto</label>
+            <label style="font-weight: 600; display: block; margin-bottom: 8px;"><app-icon name="search" />Buscar Producto</label>
             <input type="text" 
                    [(ngModel)]="textoBusqueda" 
                    (ngModelChange)="filtrarProductos()"
@@ -225,7 +224,7 @@
             <button type="button" (click)="agregarProductoAVenta()" [disabled]="!productoSeleccionado" 
                     class="btn-secondary" 
                     style="flex: 1; padding: 10px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
-              ➕ Agregar a Carrito
+              <app-icon name="plus" />Agregar a Carrito
             </button>
             <button type="button" (click)="productoSeleccionado = null; textoBusqueda = ''; categoriaSeleccionada = ''; mostrarListaProductos = false" 
                     class="btn-ghost" 
@@ -253,7 +252,7 @@
                 <td style="padding: 10px; text-align: right;">S/. {{ item.subtotal.toFixed(2) }}</td>
                 <td style="padding: 10px; text-align: center;">
                   <button type="button" (click)="removerProducto(i)" class="btn-danger" style="padding: 5px 10px; background: #ff4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                    ❌
+                    <app-icon name="x-circle" [size]="18" />
                   </button>
                 </td>
               </tr>

@@ -2,7 +2,6 @@
 <div class="module-page app-page">
   <header class="module-header">
     <div class="header-left">
-      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
       <div>
         <span class="eyebrow">Inventario</span>
         <h1>Gestión de productos</h1>
@@ -42,7 +41,7 @@
     <!-- ===== SECCIÓN DE BÚSQUEDA ===== -->
     <section class="search-card">
       <div class="search-container">
-        <h3>🔍 Buscar productos</h3>
+        <h3><app-icon name="search" />Buscar productos</h3>
         <div class="search-controls">
           <div class="search-input-group">
             <input 
@@ -58,7 +57,7 @@
               (click)="buscarProductos()"
               [disabled]="buscando"
             >
-              {{ buscando ? '⏳ Buscando...' : '🔎 Buscar' }}
+              {{ buscando ? '⏳ Buscando...' : 'Buscar' }}
             </button>
             <button 
               class="btn-secondary" 
@@ -79,7 +78,7 @@
             </select>
           </div>
 
-          <p class="search-message" *ngIf="mensaje" [class.error]="mensaje.includes('❌')">
+          <p class="search-message" *ngIf="mensaje" [class.error]="mensajeError">
             {{ mensaje }}
           </p>
         </div>
@@ -98,7 +97,7 @@
               class="product-image"
               (error)="onImageError($event)"
             />
-            <div *ngIf="!producto.imagenUrl" class="product-icon-fallback">📦</div>
+            <div *ngIf="!producto.imagenUrl" class="product-icon-fallback"><app-icon name="package" [size]="18" /></div>
           </div>
           <span class="status-badge" [class.warning]="esStockBajo(producto)">
             {{ esStockBajo(producto) ? 'Stock bajo' : 'Disponible' }}
@@ -157,7 +156,7 @@
               class="product-image"
               (error)="onImageError($event)"
             />
-            <div *ngIf="!producto.imagenUrl" class="product-icon-fallback">📦</div>
+            <div *ngIf="!producto.imagenUrl" class="product-icon-fallback"><app-icon name="package" [size]="18" /></div>
           </div>
           <span class="status-badge" [class.warning]="esStockBajo(producto)">
             {{ esStockBajo(producto) ? 'Stock bajo' : 'Disponible' }}
@@ -205,7 +204,7 @@
     </div>
 
     <div class="empty-state" *ngIf="productos.length === 0">
-      <div>📦</div>
+      <div><app-icon name="package" [size]="18" /></div>
       <h2>No hay productos registrados</h2>
       <p>Crea tu primer producto para iniciar la gestión del inventario.</p>
       <button class="btn-primary" (click)="abrirFormulario()">Crear producto</button>
@@ -323,9 +322,9 @@
         <div class="form-group">
           <label>Estado</label>
           <select formControlName="estado" class="form-input">
-            <option value="activo">✅ Activo</option>
+            <option value="activo"><app-icon name="check-circle" />Activo</option>
             <option value="inactivo">⏸️ Inactivo</option>
-            <option value="discontinuado">❌ Discontinuado</option>
+            <option value="discontinuado">Discontinuado</option>
           </select>
         </div>
 

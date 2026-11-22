@@ -1,12 +1,9 @@
 <div class="container kardex-container">
   <div class="header">
     <div class="header-content">
-      <h1>📊 Kardex - Auditoría de Inventario</h1>
+      <h1>Kardex - Auditoría de Inventario</h1>
       <p>Historial completo de todos los movimientos de inventario</p>
     </div>
-    <button class="btn-back" (click)="retroceder()" title="Volver al Dashboard">
-      ← Volver
-    </button>
   </div>
 
   <!-- Mensajes de estado -->
@@ -16,7 +13,7 @@
 
   <!-- Filtros -->
   <div class="filtros-section">
-    <h3>🔍 Filtros</h3>
+    <h3><app-icon name="search" />Filtros</h3>
     <div class="filtros-contenedor">
       <div class="filtro-grupo">
         <label>Tipo de Movimiento:</label>
@@ -40,10 +37,10 @@
 
       <div class="filtro-acciones">
         <button class="btn btn-secondary" (click)="limpiarFiltros()">
-          ✕ Limpiar Filtros
+          <app-icon name="x" />Limpiar Filtros
         </button>
         <button class="btn btn-info" (click)="exportarKardex()">
-          ⬇️ Descargar CSV
+          <app-icon name="download" />Descargar CSV
         </button>
       </div>
     </div>
@@ -60,7 +57,7 @@
     </div>
 
     <div *ngIf="!cargando && movimientosFiltrados.length === 0" class="no-datos">
-      📭 No hay movimientos que coincidan con los filtros
+      No hay movimientos que coincidan con los filtros
     </div>
 
     <div *ngIf="!cargando && movimientosFiltrados.length > 0" class="tabla-responsive">
@@ -84,7 +81,7 @@
             </td>
             <td class="tipo">
               <span [ngClass]="'badge ' + obtenerClaseMovimiento(movimiento.tipoMovimiento)">
-                {{ obtenerIconoMovimiento(movimiento.tipoMovimiento) }} {{ movimiento.tipoMovimiento | titlecase }}
+                {{ movimiento.tipoMovimiento | titlecase }}
               </span>
             </td>
             <td class="producto">
@@ -115,31 +112,31 @@
 
   <!-- Resumen de Movimientos -->
   <div *ngIf="!cargando && movimientosFiltrados.length > 0" class="resumen-section">
-    <h3>📈 Resumen de Movimientos</h3>
+    <h3>Resumen de Movimientos</h3>
     <div class="resumen-grid">
       <div class="resumen-card">
         <div class="numero">
           {{ movimientosFiltrados.filter(m => m.tipoMovimiento === 'entrada').length }}
         </div>
-        <div class="etiqueta">Entradas 📥</div>
+        <div class="etiqueta">Entradas</div>
       </div>
       <div class="resumen-card">
         <div class="numero">
           {{ movimientosFiltrados.filter(m => m.tipoMovimiento === 'salida').length }}
         </div>
-        <div class="etiqueta">Salidas 📤</div>
+        <div class="etiqueta">Salidas</div>
       </div>
       <div class="resumen-card">
         <div class="numero">
           {{ movimientosFiltrados.filter(m => m.tipoMovimiento === 'ajuste').length }}
         </div>
-        <div class="etiqueta">Ajustes 🔧</div>
+        <div class="etiqueta">Ajustes</div>
       </div>
       <div class="resumen-card">
         <div class="numero">
           {{ movimientosFiltrados.filter(m => m.tipoMovimiento === 'devolución').length }}
         </div>
-        <div class="etiqueta">Devoluciones ↩️</div>
+        <div class="etiqueta">Devoluciones</div>
       </div>
     </div>
   </div>

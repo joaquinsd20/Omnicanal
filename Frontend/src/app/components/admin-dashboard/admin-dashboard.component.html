@@ -6,7 +6,7 @@
       <p>Supervisa usuarios, suscripciones, comisiones, ventas globales e indicadores reales de la plataforma.</p>
 
       <div class="admin-user-pill">
-        <span class="avatar">👑</span>
+        <span class="avatar"><app-icon name="shield" [size]="18" /></span>
         <div>
           <strong>{{ usuarioActual?.nombreUsuario || 'Administrador' }}</strong>
           <small>{{ usuarioActual?.email }} · ADMINISTRADOR_GLOBAL</small>
@@ -15,8 +15,8 @@
     </div>
 
     <div class="hero-actions">
-      <button class="btn btn-light" (click)="navegarA('/administrar-usuarios')">👥 Administrar usuarios</button>
-      <button class="btn btn-primary" (click)="cargarResumen()">🔄 Actualizar panel</button>
+      <button class="btn btn-light" (click)="navegarA('/administrar-usuarios')">Administrar usuarios</button>
+      <button class="btn btn-primary" (click)="cargarResumen()"><app-icon name="refresh" />Actualizar panel</button>
     </div>
   </section>
 
@@ -27,7 +27,7 @@
   </div>
 
   <div class="warning-card" *ngIf="!loading && error">
-    <strong>⚠️ Revisión pendiente</strong>
+    <strong>Revisión pendiente</strong>
     <p>{{ error }}</p>
     <button class="btn btn-primary" (click)="cargarResumen()">Intentar otra vez</button>
   </div>

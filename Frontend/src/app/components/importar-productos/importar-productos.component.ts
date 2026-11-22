@@ -7,10 +7,12 @@ import { AuthService } from '../../services/auth.service';
 import { Producto } from '../../models/producto.model';
 import { Router } from '@angular/router';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-importar-productos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [IconComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './importar-productos.component.html',
   styleUrls: ['./importar-productos.component.css']
 })
@@ -141,7 +143,7 @@ export class ImportarProductosComponent implements OnInit {
       next: (response: ImportacionResponse) => {
         this.prorrateoResultado = response.prorrateos;
         this.mostrarResultado = true;
-        this.exito = `✅ Importación creada exitosamente. Total: S/ ${response.montoEnSoles}`;
+        this.exito = `Importación creada exitosamente. Total: S/ ${response.montoEnSoles}`;
         this.cargando = false;
         
         // Limpiar formulario después de 2 segundos

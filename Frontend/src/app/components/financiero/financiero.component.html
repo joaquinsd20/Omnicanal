@@ -2,14 +2,12 @@
 <div class="finance-page app-page">
   <header class="module-header">
     <div class="header-left">
-      <button class="btn-ghost" (click)="volver()">← Dashboard</button>
       <div>
         <span class="eyebrow">Financiero</span>
         <h1>Panel de rentabilidad</h1>
         <p>Analiza ingresos, costos, margen neto e indicadores clave del negocio.</p>
       </div>
     </div>
-    <button class="btn-primary" (click)="volver()">Volver al resumen</button>
   </header>
 
   <main class="module-main">
@@ -119,28 +117,28 @@
         </div>
         <div class="indicator-grid">
           <div class="indicator">
-            <span>🎯</span>
+            <span><app-icon name="target" [size]="18" /></span>
             <div>
               <small>Ticket promedio</small>
               <strong>S/. {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
             </div>
           </div>
           <div class="indicator">
-            <span>📦</span>
+            <span><app-icon name="package" [size]="18" /></span>
             <div>
               <small>Valor inventario</small>
               <strong>S/. {{ dashboardFinanciero.valorInventario.toFixed(2) }}</strong>
             </div>
           </div>
           <div class="indicator">
-            <span>📈</span>
+            <span><app-icon name="trending" [size]="18" /></span>
             <div>
               <small>Productos vendidos</small>
               <strong>{{ dashboardFinanciero.productosVendidos }} unidades</strong>
             </div>
           </div>
           <div class="indicator">
-            <span>💹</span>
+            <span><app-icon name="trending" [size]="18" /></span>
             <div>
               <small>Margen utilidad</small>
               <strong>{{ dashboardFinanciero.margenNeto }}%</strong>

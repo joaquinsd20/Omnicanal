@@ -97,11 +97,11 @@ export class SunatTestService {
    */
   getEstadoComprobanteDescripcion(codigo: number): string {
     const estados: { [key: number]: string } = {
-      0: '🔴 NO EXISTE - Comprobante no informado',
-      1: '🟢 ACEPTADO - Comprobante aceptado',
-      2: '🟡 ANULADO - Comunicado en una baja',
-      3: '🔵 AUTORIZADO - Con autorización de imprenta',
-      4: '🔴 NO AUTORIZADO - No autorizado por imprenta'
+      0: 'NO EXISTE - Comprobante no informado',
+      1: 'ACEPTADO - Comprobante aceptado',
+      2: 'ANULADO - Comunicado en una baja',
+      3: 'AUTORIZADO - Con autorización de imprenta',
+      4: 'NO AUTORIZADO - No autorizado por imprenta'
     };
     return estados[codigo] || 'Estado desconocido';
   }

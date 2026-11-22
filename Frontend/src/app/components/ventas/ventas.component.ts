@@ -30,10 +30,12 @@ interface ItemVenta {
   subtotal: number;
 }
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-ventas',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [IconComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './ventas.component.html',
   styleUrls: ['./ventas.component.css']
 })
@@ -86,7 +88,7 @@ export class VentasComponent implements OnInit {
       })
     ).subscribe((canales: Canal[]) => {
       this.canales = canales.filter(c => c.estado === 'activo');
-      console.log(`✅ Cargados ${this.canales.length} canales`);
+      console.log(`Cargados ${this.canales.length} canales`);
       // Si hay canales, seleccionar el primero por defecto
       if (this.canales.length > 0 && this.canales[0].idCanal) {
         this.ventaForm?.patchValue({ idCanal: this.canales[0].idCanal });
@@ -103,12 +105,12 @@ export class VentasComponent implements OnInit {
       })
     ).subscribe((productos: any[]) => {
       this.productos = productos.filter(p => p.stockTotal > 0);
-      console.log(`✅ Cargados ${this.productos.length} productos con stock`);
+      console.log(`Cargados ${this.productos.length} productos con stock`);
       
       // Extraer categorías únicas y ordenarlas
       const categoriasSet = new Set(this.productos.map(p => p.categoria).filter(c => c));
       this.categorias = Array.from(categoriasSet).sort();
-      console.log(`📂 Categorías disponibles: ${this.categorias.join(', ')}`);
+      console.log(`Categorías disponibles: ${this.categorias.join(', ')}`);
       
       // Inicializar lista filtrada
       this.productosFiltrados = this.productos;
@@ -129,7 +131,7 @@ export class VentasComponent implements OnInit {
     ).subscribe((ventas: Venta[]) => {
       this.ventas = ventas;
       this.cargando = false;
-      console.log(`✅ Cargadas ${ventas.length} ventas desde BD`);
+      console.log(`Cargadas ${ventas.length} ventas desde BD`);
       this.cdr.markForCheck();
     });
   }
@@ -213,7 +215,7 @@ export class VentasComponent implements OnInit {
 
   agregarProductoAVenta(): void {
     if (!this.productoSeleccionado || this.cantidadSeleccionada < 1) {
-      this.mensaje = '⚠️ Selecciona producto y cantidad';
+      this.mensaje = 'Selecciona producto y cantidad';
       this.cdr.markForCheck();
       return;
     }
@@ -222,7 +224,7 @@ export class VentasComponent implements OnInit {
     if (!producto) return;
 
     if (this.cantidadSeleccionada > producto.stockTotal) {
-      this.mensaje = `⚠️ Stock insuficiente. Disponible: ${producto.stockTotal}`;
+      this.mensaje = `Stock insuficiente. Disponible: ${producto.stockTotal}`;
       this.cdr.markForCheck();
       return;
     }
@@ -243,7 +245,7 @@ export class VentasComponent implements OnInit {
 
     this.productoSeleccionado = null;
     this.cantidadSeleccionada = 1;
-    this.mensaje = '✅ Producto agregado';
+    this.mensaje = 'Producto agregado';
     this.cdr.markForCheck();
     setTimeout(() => { this.mensaje = ''; }, 2000);
   }
@@ -280,7 +282,7 @@ export class VentasComponent implements OnInit {
 
   guardarVenta(): void {
     if (!this.itemsVenta.length) {
-      this.mensaje = '⚠️ Debes agregar al menos 1 producto';
+      this.mensaje = 'Debes agregar al menos 1 producto';
       this.cdr.markForCheck();
       return;
     }
@@ -335,7 +337,7 @@ export class VentasComponent implements OnInit {
     ).subscribe((ventaCreada) => {
       if (ventaCreada) {
         this.ventas = [ventaCreada, ...this.ventas];
-        this.mensaje = '✅ Venta registrada y stock descontado';
+        this.mensaje = 'Venta registrada y stock descontado';
         this.cargarProductos();
         this.cerrarFormulario();
         this.cdr.markForCheck();
@@ -367,7 +369,7 @@ export class VentasComponent implements OnInit {
       if (index > -1) {
         this.ventas[index].estadoVenta = nuevoEstado;
       }
-      this.mensaje = '✅ Estado actualizado correctamente';
+      this.mensaje = 'Estado actualizado correctamente';
       this.cdr.markForCheck();
       setTimeout(() => {
         this.mensaje = '';

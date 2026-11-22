@@ -1,12 +1,9 @@
 <div class="container importacion-container">
   <div class="header">
     <div class="header-content">
-      <h1>📦 Importar Productos</h1>
+      <h1>Importar Productos</h1>
       <p>Carga tus facturas y distribuye costos automáticamente</p>
     </div>
-    <button class="btn-back" (click)="retroceder()" title="Volver al Dashboard">
-      ← Volver
-    </button>
   </div>
 
   <!-- Mensajes de estado -->
@@ -19,7 +16,7 @@
 
   <!-- Resultado del Prorrateo -->
   <div *ngIf="mostrarResultado && prorrateoResultado.length > 0" class="resultado-prorrateo">
-    <h3>✨ Desglose de Costos por Producto</h3>
+    <h3>Desglose de Costos por Producto</h3>
     <table class="tabla-prorrateo">
       <thead>
         <tr>
@@ -51,7 +48,7 @@
     
     <!-- Datos Generales -->
     <div class="seccion">
-      <h3>📋 Datos Generales</h3>
+      <h3><app-icon name="clipboard" />Datos Generales</h3>
       
       <div class="form-row">
         <div class="form-group">
@@ -89,7 +86,7 @@
 
     <!-- Moneda y Conversión -->
     <div class="seccion">
-      <h3>💱 Conversión de Moneda</h3>
+      <h3>Conversión de Moneda</h3>
       
       <div class="form-row">
         <div class="form-group">
@@ -128,7 +125,7 @@
 
     <!-- Costos Desglosados -->
     <div class="seccion">
-      <h3>💰 Costos Desglosados</h3>
+      <h3>Costos Desglosados</h3>
       
       <div class="form-row">
         <div class="form-group">
@@ -171,7 +168,7 @@
 
     <!-- Detalles Físicos -->
     <div class="seccion">
-      <h3>📏 Detalles Físicos</h3>
+      <h3>Detalles Físicos</h3>
       
       <div class="form-row">
         <div class="form-group">
@@ -201,7 +198,7 @@
 
     <!-- Productos de Importación -->
     <div class="seccion">
-      <h3>🛍️ Productos Importados</h3>
+      <h3>Productos Importados</h3>
       
       <div *ngFor="let item of items.controls; let i = index" class="item-importacion">
         <div [formGroupName]="i" class="form-row">
@@ -236,7 +233,7 @@
 
           <div class="form-group">
             <button type="button" class="btn btn-danger" (click)="eliminarItem(i)" *ngIf="items.length > 1">
-              ✕ Eliminar
+              <app-icon name="x" />Eliminar
             </button>
           </div>
         </div>
@@ -250,7 +247,7 @@
     <!-- Botón Enviar -->
     <div class="botones">
       <button type="submit" class="btn btn-primary btn-lg" [disabled]="cargando || importacionForm.invalid">
-        <span *ngIf="!cargando">✅ Registrar Importación</span>
+        <span *ngIf="!cargando"><app-icon name="check-circle" />Registrar Importación</span>
         <span *ngIf="cargando">⏳ Procesando...</span>
       </button>
     </div>

@@ -3,10 +3,12 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { SunatTestService, SunatValidationRequest, SunatValidationResponse } from '../../services/sunat-test.service';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-sunat-test',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [IconComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './sunat-test.component.html',
   styleUrls: ['./sunat-test.component.css']
 })
@@ -70,7 +72,7 @@ export class SunatTestComponent implements OnInit {
     if (this.credencialesForm.valid) {
       const creds = this.credencialesForm.value;
       localStorage.setItem('sunat_credentials', JSON.stringify(creds));
-      alert('✅ Credenciales guardadas localmente');
+      alert('Credenciales guardadas localmente');
     }
   }
 
@@ -94,7 +96,7 @@ export class SunatTestComponent implements OnInit {
    */
   generarToken(): void {
     if (!this.credencialesForm.valid) {
-      this.tokenError = '❌ Completa todos los campos de credenciales';
+      this.tokenError = 'Completa todos los campos de credenciales';
       return;
     }
 
@@ -111,10 +113,10 @@ export class SunatTestComponent implements OnInit {
           this.tokenExpiration = response.expires_in;
           this.tokenResponse = response;
           this.loadingToken = false;
-          console.log('✅ Token generado:', response);
+          console.log('Token generado:', response);
         },
         error: (err) => {
-          this.tokenError = `❌ ${err.message || 'Error al generar token'}`;
+          this.tokenError = `${err.message || 'Error al generar token'}`;
           this.loadingToken = false;
           console.error(err);
         }
@@ -126,12 +128,12 @@ export class SunatTestComponent implements OnInit {
    */
   validarComprobante(): void {
     if (!this.comprobanteForm.valid) {
-      this.validationError = '❌ Completa todos los campos del comprobante';
+      this.validationError = 'Completa todos los campos del comprobante';
       return;
     }
 
     if (!this.token) {
-      this.validationError = '❌ Primero debes generar un token válido';
+      this.validationError = 'Primero debes generar un token válido';
       return;
     }
 
@@ -154,10 +156,10 @@ export class SunatTestComponent implements OnInit {
         next: (response) => {
           this.validationResponse = response;
           this.loadingValidation = false;
-          console.log('✅ Validación completada:', response);
+          console.log('Validación completada:', response);
         },
         error: (err) => {
-          this.validationError = `❌ ${err.message || 'Error al validar comprobante'}`;
+          this.validationError = `${err.message || 'Error al validar comprobante'}`;
           this.loadingValidation = false;
           console.error(err);
         }

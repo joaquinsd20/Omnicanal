@@ -6,10 +6,12 @@ import { Usuario } from '../../models/usuario.model';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-administrar-usuarios',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [IconComponent, CommonModule, ReactiveFormsModule],
   templateUrl: './administrar-usuarios.component.html',
   styleUrls: ['./administrar-usuarios.component.css']
 })

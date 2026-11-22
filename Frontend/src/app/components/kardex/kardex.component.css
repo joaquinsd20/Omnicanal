@@ -2,7 +2,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--surface-2);
   border-radius: 8px;
 }
 
@@ -20,32 +20,32 @@
 }
 
 .header h1 {
-  color: #2c3e50;
+  color: var(--text);
   font-size: 2em;
   margin: 0;
 }
 
 .header p {
-  color: #7f8c8d;
+  color: var(--muted);
   margin: 10px 0 0 0;
 }
 
 .btn-back {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: var(--primary);
   color: white;
   border: none;
   padding: 12px 18px;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
   transition: all 0.3s ease;
   white-space: nowrap;
   font-size: 14px;
 }
 
 .btn-back:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
+  transform: none;
+  box-shadow: var(--shadow-soft);
 }
 
 .btn-back:active {
@@ -69,12 +69,12 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
 }
 
 .filtros-section h3 {
   margin-top: 0;
-  color: #2c3e50;
+  color: var(--text);
 }
 
 .filtros-contenedor {
@@ -91,7 +91,7 @@
 
 .filtro-grupo label {
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--text);
   margin-bottom: 8px;
   font-size: 0.95em;
 }
@@ -99,7 +99,7 @@
 .filtro-grupo select,
 .filtro-grupo input {
   padding: 10px;
-  border: 1px solid #bdc3c7;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   font-size: 0.95em;
 }
@@ -107,7 +107,7 @@
 .filtro-grupo select:focus,
 .filtro-grupo input:focus {
   outline: none;
-  border-color: #3498db;
+  border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
@@ -128,21 +128,21 @@
 }
 
 .btn-secondary {
-  background-color: #95a5a6;
+  background-color: var(--muted);
   color: white;
 }
 
 .btn-secondary:hover {
-  background-color: #7f8c8d;
+  background-color: var(--muted);
 }
 
 .btn-info {
-  background-color: #3498db;
+  background-color: var(--accent);
   color: white;
 }
 
 .btn-info:hover {
-  background-color: #2980b9;
+  background-color: var(--accent);
 }
 
 .tabla-section {
@@ -150,7 +150,7 @@
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
 }
 
 .tabla-header {
@@ -162,20 +162,20 @@
 
 .tabla-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--text);
 }
 
 .loading {
   text-align: center;
   padding: 40px;
-  color: #7f8c8d;
+  color: var(--muted);
   font-size: 1.1em;
 }
 
 .no-datos {
   text-align: center;
   padding: 40px;
-  color: #95a5a6;
+  color: var(--muted);
   font-size: 1.1em;
 }
 
@@ -202,7 +202,7 @@
 
 .tabla-kardex td {
   padding: 12px;
-  border-bottom: 1px solid #ecf0f1;
+  border-bottom: 1px solid var(--surface-2);
 }
 
 .tabla-kardex tbody tr {
@@ -210,28 +210,28 @@
 }
 
 .tabla-kardex tbody tr:hover {
-  background-color: #f8f9fa;
+  background-color: var(--surface-2);
 }
 
 .tabla-kardex tbody tr.tipo-entrada {
-  border-left: 4px solid #27ae60;
+  border-left: 4px solid var(--success);
 }
 
 .tabla-kardex tbody tr.tipo-salida {
-  border-left: 4px solid #e74c3c;
+  border-left: 4px solid var(--danger);
 }
 
 .tabla-kardex tbody tr.tipo-ajuste {
-  border-left: 4px solid #3498db;
+  border-left: 4px solid var(--accent);
 }
 
 .tabla-kardex tbody tr.tipo-devolución {
-  border-left: 4px solid #f39c12;
+  border-left: 4px solid var(--warning);
 }
 
 .fecha {
   font-size: 0.9em;
-  color: #7f8c8d;
+  color: var(--muted);
 }
 
 .tipo {
@@ -273,7 +273,7 @@
 }
 
 .producto {
-  color: #2c3e50;
+  color: var(--text);
 }
 
 .cantidad {
@@ -282,17 +282,17 @@
 }
 
 .text-success {
-  color: #27ae60;
+  color: var(--success);
 }
 
 .text-danger {
-  color: #e74c3c;
+  color: var(--danger);
 }
 
 .stock-anterior,
 .stock-posterior {
   text-align: center;
-  color: #2c3e50;
+  color: var(--text);
 }
 
 .stock-posterior {
@@ -302,11 +302,11 @@
 .referencia {
   font-family: 'Courier New', monospace;
   font-size: 0.9em;
-  color: #7f8c8d;
+  color: var(--muted);
 }
 
 .descripcion {
-  color: #7f8c8d;
+  color: var(--muted);
   font-size: 0.9em;
 }
 
@@ -314,12 +314,12 @@
   background-color: white;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-soft);
 }
 
 .resumen-section h3 {
   margin-top: 0;
-  color: #2c3e50;
+  color: var(--text);
 }
 
 .resumen-grid {
@@ -330,8 +330,9 @@
 }
 
 .resumen-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
   padding: 20px;
   border-radius: 8px;
   text-align: center;
@@ -340,12 +341,12 @@
 }
 
 .resumen-card:hover {
-  transform: translateY(-4px);
+  transform: none;
 }
 
 .resumen-card .numero {
   font-size: 2em;
-  font-weight: bold;
+  font-weight: 600;
   margin-bottom: 10px;
 }
 

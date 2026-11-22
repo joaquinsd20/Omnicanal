@@ -3,45 +3,28 @@
   <section class="brand-panel">
     <div class="brand-top">
       <div class="brand-mark">O</div>
-      <div>
-        <h1>Omnicanal</h1>
-        <p>Gestión profesional para ventas, inventario y rentabilidad.</p>
-      </div>
+      <span class="brand-name">Omnicanal</span>
     </div>
 
     <div class="hero-copy">
-      <span class="eyebrow">SaaS de gestión comercial</span>
-      <h2>Centraliza tu operación y toma decisiones con datos claros.</h2>
-      <p>
-        Controla productos, ventas, márgenes y alertas de stock desde una plataforma segura con autenticación JWT.
-      </p>
+      <h1>Inventario, ventas e importaciones en un solo lugar.</h1>
+      <p>Para importadores y negocios que venden por varios canales en Perú.</p>
     </div>
 
-    <div class="feature-grid">
-      <article class="feature-card">
-        <span>📦</span>
-        <h3>Inventario inteligente</h3>
-        <p>Stock, costos, precios y alertas de reabastecimiento en una sola vista.</p>
-      </article>
-      <article class="feature-card">
-        <span>💳</span>
-        <h3>Ventas ordenadas</h3>
-        <p>Seguimiento de pedidos, estados de entrega y pagos por cliente.</p>
-      </article>
-      <article class="feature-card">
-        <span>📈</span>
-        <h3>Control financiero</h3>
-        <p>Ingresos, costos, margen neto y ticket promedio para sustentar resultados.</p>
-      </article>
-    </div>
+    <ul class="feature-list">
+      <li><app-icon name="package" /><span><strong>Inventario multicanal</strong> con kardex y alertas de stock.</span></li>
+      <li><app-icon name="plane" /><span><strong>Costeo de importaciones</strong> con prorrateo de gastos.</span></li>
+      <li><app-icon name="chart" /><span><strong>Reportes financieros</strong> de ingresos, costos y margen.</span></li>
+    </ul>
+
+    <p class="brand-foot">Proyecto académico · Angular, Spring Boot y MySQL</p>
   </section>
 
   <section class="auth-panel">
     <div class="auth-card">
       <div class="card-header">
-        <span class="secure-badge">🔒 Acceso seguro</span>
         <h2>{{ isRegistering ? 'Crear cuenta' : 'Iniciar sesión' }}</h2>
-        <p>{{ isRegistering ? 'Registra tu negocio para empezar a gestionar la operación.' : 'Ingresa con tu correo y contraseña para continuar.' }}</p>
+        <p>{{ isRegistering ? 'Registra tu negocio para empezar.' : 'Ingresa a tu cuenta para continuar.' }}</p>
       </div>
 
       <form class="form-container" *ngIf="!isRegistering" [formGroup]="loginForm" (ngSubmit)="login()">

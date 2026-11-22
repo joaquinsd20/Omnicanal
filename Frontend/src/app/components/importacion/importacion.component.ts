@@ -7,10 +7,12 @@ import { ProductoService } from '../../services/producto.service';
 import { AuthService } from '../../services/auth.service';
 import { Producto } from '../../models/producto.model';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-importacion',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [IconComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './importacion.component.html',
   styleUrls: ['./importacion.component.css']
 })
@@ -19,6 +21,7 @@ export class ImportacionComponent implements OnInit {
   productos: Producto[] = [];
   cargando = false;
   mensaje = '';
+  mensajeError = false;
   
   usuarioActual: any = null;
   mostrarFormulario = false;
@@ -87,7 +90,8 @@ export class ImportacionComponent implements OnInit {
         this.cdr.markForCheck();
       },
       (error: any) => {
-        this.mensaje = '❌ Error al cargar productos';
+        this.mensaje = 'Error al cargar productos';
+        this.mensajeError = true;
         console.error(error);
       }
     );
@@ -104,7 +108,8 @@ export class ImportacionComponent implements OnInit {
         this.cdr.markForCheck();
       },
       (error: any) => {
-        this.mensaje = '❌ Error al cargar importaciones';
+        this.mensaje = 'Error al cargar importaciones';
+        this.mensajeError = true;
         console.error(error);
         this.cargando = false;
       }
@@ -142,13 +147,15 @@ export class ImportacionComponent implements OnInit {
 
   agregarItem(): void {
     if (!this.productoSeleccionado || this.cantidadItem <= 0 || this.precioUnitarioItem <= 0) {
-      this.mensaje = '⚠️ Selecciona producto, cantidad y precio válidos';
+      this.mensaje = 'Selecciona producto, cantidad y precio válidos';
+      this.mensajeError = true;
       return;
     }
 
     const producto = this.productos.find(p => p.idProducto === this.productoSeleccionado);
     if (!producto) {
-      this.mensaje = '❌ Producto no encontrado';
+      this.mensaje = 'Producto no encontrado';
+      this.mensajeError = true;
       return;
     }
 
@@ -159,7 +166,9 @@ export class ImportacionComponent implements OnInit {
       precioUnitarioOriginal: this.precioUnitarioItem
     });
 
-    this.mensaje = `✅ ${producto.nombreProducto} agregado`;
+    this.mensaje = `${producto.nombreProducto} agregado`;
+
+    this.mensajeError = false;
     this.productoSeleccionado = null;
     this.cantidadItem = 1;
     this.precioUnitarioItem = 0;
@@ -175,12 +184,14 @@ export class ImportacionComponent implements OnInit {
 
   guardarImportacion(): void {
     if (this.importacionForm.invalid) {
-      this.mensaje = '⚠️ Completa todos los campos requeridos';
+      this.mensaje = 'Completa todos los campos requeridos';
+      this.mensajeError = true;
       return;
     }
 
     if (this.itemsImportacion.length === 0) {
-      this.mensaje = '⚠️ Agrega al menos un producto';
+      this.mensaje = 'Agrega al menos un producto';
+      this.mensajeError = true;
       return;
     }
 
@@ -213,7 +224,8 @@ export class ImportacionComponent implements OnInit {
     this.importacionService.crearImportacion(request, this.usuarioActual.idUsuario).subscribe(
       (respuesta: ImportacionResponse) => {
         this.importacionGuardada = respuesta;
-        this.mensaje = '✅ Importación guardada correctamente';
+        this.mensaje = 'Importación guardada correctamente';
+        this.mensajeError = false;
         this.cargando = false;
         this.cdr.markForCheck();
 
@@ -223,7 +235,8 @@ export class ImportacionComponent implements OnInit {
         }, 2000);
       },
       (error: any) => {
-        this.mensaje = `❌ Error: ${error.error?.message || 'No se pudo guardar'}`;
+        this.mensaje = `Error: ${error.error?.message || 'No se pudo guardar'}`;
+        this.mensajeError = true;
         this.cargando = false;
         this.cdr.markForCheck();
       }
@@ -246,7 +259,8 @@ export class ImportacionComponent implements OnInit {
         this.cdr.markForCheck();
       },
       (error: any) => {
-        this.mensaje = `❌ Error al obtener detalles: ${error.error?.message || 'Error'}`;
+        this.mensaje = `Error al obtener detalles: ${error.error?.message || 'Error'}`;
+        this.mensajeError = true;
       }
     );
   }

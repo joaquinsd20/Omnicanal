@@ -1,6 +1,6 @@
 <div class="sunat-test-container">
   <div class="sunat-header">
-    <h1>🔐 Prueba de Integración SUNAT</h1>
+    <h1>Prueba de Integración SUNAT</h1>
     <p>Según Manual: Consulta Integrada de Comprobante de Pago por Servicio Web</p>
   </div>
 
@@ -9,7 +9,7 @@
     <div class="panel credenciales-panel">
       <h2>Paso 1️⃣: Generar Token SUNAT</h2>
       <p class="info">
-        📌 Obtén tus credenciales en: 
+        Obtén tus credenciales en: 
         <strong>SUNAT SOL → Empresas → Comprobantes de Pago → Consulta de Validez → Credenciales de API SUNAT</strong>
       </p>
 
@@ -50,7 +50,7 @@
             class="btn btn-primary"
           >
             <span *ngIf="loadingToken">⏳ Generando token...</span>
-            <span *ngIf="!loadingToken">🔓 Generar Token</span>
+            <span *ngIf="!loadingToken"><app-icon name="unlock" />Generar Token</span>
           </button>
 
           <button 
@@ -58,7 +58,7 @@
             (click)="saveCredentials()"
             class="btn btn-secondary"
           >
-            💾 Guardar Credenciales
+            <app-icon name="save" />Guardar Credenciales
           </button>
         </div>
       </form>
@@ -69,7 +69,7 @@
       </div>
 
       <div *ngIf="tokenResponse" class="alert alert-success">
-        <h3>✅ Token Generado Exitosamente</h3>
+        <h3><app-icon name="check-circle" />Token Generado Exitosamente</h3>
         <div class="token-info">
           <p><strong>Token:</strong> <code>{{ token | slice:0:50 }}...</code></p>
           <p><strong>Tipo:</strong> {{ tokenResponse.token_type }}</p>
@@ -82,7 +82,7 @@
     <div class="panel validacion-panel">
       <h2>Paso 2️⃣: Validar Comprobante</h2>
       <p class="info">
-        📌 Ingresa los datos del comprobante (Factura o Boleta) que deseas consultar
+        Ingresa los datos del comprobante (Factura o Boleta) que deseas consultar
       </p>
 
       <form [formGroup]="comprobanteForm" class="form-group">
@@ -192,7 +192,7 @@
             class="btn btn-primary"
           >
             <span *ngIf="loadingValidation">⏳ Validando...</span>
-            <span *ngIf="!loadingValidation">🔍 Validar Comprobante</span>
+            <span *ngIf="!loadingValidation"><app-icon name="search" />Validar Comprobante</span>
           </button>
 
           <button 
@@ -200,7 +200,7 @@
             (click)="usarEjemplo()"
             class="btn btn-info"
           >
-            📋 Usar Ejemplo
+            <app-icon name="clipboard" />Usar Ejemplo
           </button>
 
           <button 
@@ -208,7 +208,7 @@
             (click)="limpiar()"
             class="btn btn-secondary"
           >
-            🗑️ Limpiar
+            <app-icon name="trash" />Limpiar
           </button>
         </div>
       </form>
@@ -220,7 +220,7 @@
 
       <!-- Respuesta de Validación -->
       <div *ngIf="validationResponse" class="alert" [ngClass]="validationResponse.success ? 'alert-success' : 'alert-warning'">
-        <h3>{{ validationResponse.success ? '✅ Consulta Exitosa' : '⚠️ Consulta Completada' }}</h3>
+        <h3>{{ validationResponse.success ? 'Consulta Exitosa' : 'Consulta Completada' }}</h3>
         <p class="message">{{ validationResponse.message }}</p>
 
         <div *ngIf="validationResponse.data" class="response-data">
@@ -242,7 +242,7 @@
           <div *ngIf="validationResponse.data.Observaciones && validationResponse.data.Observaciones.length > 0" class="data-row">
             <span class="label">Observaciones:</span>
             <div class="observaciones">
-              <p *ngFor="let obs of validationResponse.data.Observaciones">📌 {{ obs }}</p>
+              <p *ngFor="let obs of validationResponse.data.Observaciones">{{ obs }}</p>
             </div>
           </div>
         </div>
@@ -256,7 +256,7 @@
 
   <!-- REFERENCIAS -->
   <div class="reference-section">
-    <h3>📖 Referencias del Manual SUNAT</h3>
+    <h3>Referencias del Manual SUNAT</h3>
     <ul>
       <li><strong>Generación de Credenciales:</strong> SUNAT SOL → Empresas → Comprobantes de Pago → Credenciales de API</li>
       <li><strong>Generación de Token:</strong> POST a <code>https://api-seguridad.sunat.gob.pe/v1/clientesextranet/{{ '{' }}client_id{{ '}' }}/oauth2/token/</code></li>

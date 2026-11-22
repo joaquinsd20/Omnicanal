@@ -1,26 +1,5 @@
 
 <div class="dashboard-page app-page">
-  <header class="topbar">
-    <div class="brand-block">
-      <div class="brand-icon">O</div>
-      <div>
-        <h1>Omnicanal</h1>
-        <p>{{ usuarioActual?.nombreUsuario || 'Usuario' }} · Panel operativo</p>
-      </div>
-    </div>
-
-    <button class="menu-btn" (click)="toggleMenu()" aria-label="Abrir menú">☰</button>
-
-    <nav class="nav-links" [class.open]="menuAbierto">
-      <a class="active" (click)="navegarA('/dashboard')">Dashboard</a>
-      <a (click)="navegarA('/importaciones')">🌍 Importaciones</a>
-      <a (click)="navegarA('/kardex')">📋 Kardex</a>
-      <a (click)="navegarA('/productos')">Inventario</a>
-      <a (click)="navegarA('/ventas')">Ventas</a>
-      <a (click)="navegarA('/financiero')">Financiero</a>
-      <button class="logout-btn" (click)="cerrarSesion()">Cerrar sesión</button>
-    </nav>
-  </header>
 
   <main class="dashboard-content" *ngIf="!loading">
     <section class="hero-section">
@@ -30,14 +9,14 @@
         <p>Visualiza ingresos, utilidad, ventas recientes, importaciones, kardex y alertas para tomar decisiones rápidas.</p>
       </div>
       <div class="hero-buttons">
-        <button class="btn-primary" (click)="navegarA('/importaciones')">➕ Nueva importación</button>
-        <button class="btn-secondary" (click)="navegarA('/ventas')">💳 Registrar venta</button>
+        <button class="btn-primary" (click)="navegarA('/importaciones')"><app-icon name="plus" />Nueva importación</button>
+        <button class="btn-secondary" (click)="navegarA('/ventas')">Registrar venta</button>
       </div>
     </section>
 
     <section class="summary-grid">
       <article class="metric-card income">
-        <div class="metric-icon">📊</div>
+        <div class="metric-icon"><app-icon name="chart" [size]="18" /></div>
         <div>
           <span>Ingresos de hoy</span>
           <strong>S/. {{ totalIngresos.toFixed(2) }}</strong>
@@ -46,7 +25,7 @@
       </article>
 
       <article class="metric-card profit">
-        <div class="metric-icon">💰</div>
+        <div class="metric-icon"><app-icon name="coins" [size]="18" /></div>
         <div>
           <span>Ganancia neta</span>
           <strong>S/. {{ gananciaNeta.toFixed(2) }}</strong>
@@ -55,7 +34,7 @@
       </article>
 
       <article class="metric-card stock">
-        <div class="metric-icon">📦</div>
+        <div class="metric-icon"><app-icon name="package" [size]="18" /></div>
         <div>
           <span>Stock bajo</span>
           <strong>{{ productosStockBajo.length }} productos</strong>
@@ -64,7 +43,7 @@
       </article>
 
       <article class="metric-card import">
-        <div class="metric-icon">✈️</div>
+        <div class="metric-icon"><app-icon name="plane" [size]="18" /></div>
         <div>
           <span>Importaciones</span>
           <strong>{{ importacionesRecientes.length }} activas</strong>
@@ -86,7 +65,7 @@
 
         <div class="list-stack compact" *ngIf="importacionesRecientes.length > 0">
           <div class="import-row compact" *ngFor="let importacion of importacionesRecientes">
-            <div class="import-icon">✈️</div>
+            <div class="import-icon"><app-icon name="plane" [size]="18" /></div>
             <div class="import-info">
               <h4>Factura #{{ importacion.numeroFactura }}</h4>
               <p>{{ importacion.proveedorInternacional }}</p>
@@ -138,9 +117,7 @@
         <div class="list-stack compact" *ngIf="movimientosRecientes.length > 0">
           <div class="movement-row compact" *ngFor="let movimiento of movimientosRecientes">
             <div class="movement-icon" [ngClass]="'tipo-' + movimiento.tipoMovimiento">
-              {{ movimiento.tipoMovimiento === 'entrada' ? '📥' : 
-                 movimiento.tipoMovimiento === 'salida' ? '📤' : 
-                 movimiento.tipoMovimiento === 'ajuste' ? '🔧' : '↩️' }}
+              <app-icon [name]="movimiento.tipoMovimiento === 'entrada' ? 'arrow-down' : movimiento.tipoMovimiento === 'salida' ? 'arrow-up' : movimiento.tipoMovimiento === 'ajuste' ? 'wrench' : 'undo'" />
             </div>
             <div class="movement-info">
               <h4>{{ movimiento.nombreProducto }}</h4>
@@ -210,27 +187,27 @@
       </div>
       <div class="action-grid">
         <button class="action-card" (click)="navegarA('/importaciones')">
-          <span>✈️</span>
+          <span><app-icon name="plane" [size]="18" /></span>
           <strong>Nueva importación</strong>
           <small>Registrar factura, prorrateo y costos.</small>
         </button>
         <button class="action-card" (click)="navegarA('/ventas')">
-          <span>💳</span>
+          <span><app-icon name="card" [size]="18" /></span>
           <strong>Registrar venta</strong>
           <small>Crear pedido y actualizar estado comercial.</small>
         </button>
         <button class="action-card" (click)="navegarA('/productos')">
-          <span>➕</span>
+          <span><app-icon name="plus" [size]="18" /></span>
           <strong>Nuevo producto</strong>
           <small>Registrar SKU, costos, precios y stock.</small>
         </button>
         <button class="action-card" (click)="navegarA('/kardex')">
-          <span>📋</span>
+          <span><app-icon name="clipboard" [size]="18" /></span>
           <strong>Ver kardex</strong>
           <small>Auditoría completa de movimientos de inventario.</small>
         </button>
         <button class="action-card" (click)="navegarA('/financiero')">
-          <span>📈</span>
+          <span><app-icon name="trending" [size]="18" /></span>
           <strong>Ver reportes</strong>
           <small>Revisar margen, costos y rendimiento.</small>
         </button>

@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
-import { RouterOutlet, Router, RouterLink } from '@angular/router';
+import { RouterOutlet, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { IconComponent } from './components/icon/icon.component';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, CommonModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule, IconComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -41,6 +42,10 @@ export class App {
     this.isAuthenticated.set(false);
     this.currentUser.set(null);
     this.router.navigate(['/login']);
+  }
+
+  closeMenu(): void {
+    this.showMenu.set(false);
   }
 
   toggleMenu(): void {

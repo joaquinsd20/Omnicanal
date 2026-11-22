@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-financiero',
   standalone: true,
-  imports: [CommonModule],
+  imports: [IconComponent, CommonModule],
   templateUrl: './financiero.component.html',
   styleUrls: ['./financiero.component.css']
 })

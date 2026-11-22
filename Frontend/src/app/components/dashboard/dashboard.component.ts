@@ -11,10 +11,12 @@ import { Producto } from '../../models/producto.model';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule],
+    imports: [IconComponent, CommonModule],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
 })

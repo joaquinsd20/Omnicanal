@@ -6,10 +6,12 @@ import { ImportacionService, MovimientoInventario } from '../../services/importa
 import { AuthService } from '../../services/auth.service';
 import * as XLSX from 'xlsx';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-kardex',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [IconComponent, CommonModule, FormsModule],
   templateUrl: './kardex.component.html',
   styleUrls: ['./kardex.component.css']
 })
@@ -92,13 +94,13 @@ export class KardexComponent implements OnInit {
   obtenerIconoMovimiento(tipo: string): string {
     switch (tipo.toLowerCase()) {
       case 'entrada':
-        return '📥';
+        return '';
       case 'salida':
-        return '📤';
+        return '';
       case 'ajuste':
-        return '🔧';
+        return '';
       case 'devolución':
-        return '↩️';
+        return '';
       default:
         return '•';
     }

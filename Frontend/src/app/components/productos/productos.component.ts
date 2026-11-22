@@ -26,10 +26,12 @@ function precioVentaCoherente(group: AbstractControl): ValidationErrors | null {
   return null;
 }
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-productos',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [IconComponent, CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './productos.component.html',
   styleUrls: ['./productos.component.css']
 })
@@ -38,6 +40,7 @@ export class ProductosComponent implements OnInit {
   productosFiltered: Producto[] = [];
   cargando = false;
   mensaje = '';
+  mensajeError = false;
   
   // ===== BÚSQUEDA =====
   terminoBusqueda = '';
@@ -74,13 +77,14 @@ export class ProductosComponent implements OnInit {
         console.error('Error cargando productos:', error);
         this.cargando = false;
         this.mensaje = 'Error al cargar productos desde BD';
+        this.mensajeError = true;
         this.cdr.markForCheck();
         return of([]);
       })
     ).subscribe(productos => {
       this.productos = productos;
       this.cargando = false;
-      console.log(`✅ Cargados ${productos.length} productos desde BD`);
+      console.log(`Cargados ${productos.length} productos desde BD`);
       this.cdr.markForCheck();
     });
   }
@@ -223,6 +227,7 @@ export class ProductosComponent implements OnInit {
         catchError(error => {
           console.error('Error actualizando producto:', error);
           this.mensaje = 'Error al actualizar producto';
+          this.mensajeError = true;
           this.cdr.markForCheck();
           return of(null);
         })
@@ -231,11 +236,13 @@ export class ProductosComponent implements OnInit {
           this.productos = this.productos.map((p) =>
             p.idProducto === editId ? productoActualizado : p
           );
-          this.mensaje = '✅ Producto actualizado correctamente';
+          this.mensaje = 'Producto actualizado correctamente';
+          this.mensajeError = false;
           this.cerrarFormulario();
           this.cdr.markForCheck();
           setTimeout(() => {
             this.mensaje = '';
+            this.mensajeError = false;
             this.cdr.markForCheck();
           }, 3000);
         }
@@ -246,17 +253,20 @@ export class ProductosComponent implements OnInit {
         catchError(error => {
           console.error('Error creando producto:', error);
           this.mensaje = 'Error al crear producto';
+          this.mensajeError = true;
           this.cdr.markForCheck();
           return of(null);
         })
       ).subscribe((nuevoProducto) => {
         if (nuevoProducto) {
           this.productos.push(nuevoProducto);
-          this.mensaje = '✅ Producto creado correctamente';
+          this.mensaje = 'Producto creado correctamente';
+          this.mensajeError = false;
           this.cerrarFormulario();
           this.cdr.markForCheck();
           setTimeout(() => {
             this.mensaje = '';
+            this.mensajeError = false;
             this.cdr.markForCheck();
           }, 3000);
         }
@@ -272,16 +282,19 @@ export class ProductosComponent implements OnInit {
         catchError(error => {
           console.error('Error eliminando producto:', error);
           this.mensaje = 'Error al eliminar producto';
+          this.mensajeError = true;
           this.cdr.markForCheck();
           return of(void 0);
         })
       ).subscribe(() => {
         this.productos = this.productos.filter((p) => p.idProducto !== id);
-        this.mensaje = '✅ Producto eliminado correctamente';
-        console.log(`✅ Producto ${id} eliminado`);
+        this.mensaje = 'Producto eliminado correctamente';
+        this.mensajeError = false;
+        console.log(`Producto ${id} eliminado`);
         this.cdr.markForCheck();
         setTimeout(() => {
           this.mensaje = '';
+          this.mensajeError = false;
           this.cdr.markForCheck();
         }, 3000);
       });
@@ -301,12 +314,14 @@ export class ProductosComponent implements OnInit {
    */
   buscarProductos(): void {
     if (!this.terminoBusqueda.trim() && this.tipoBusqueda !== 'stock-bajo') {
-      this.mensaje = '⚠️ Ingresa un término de búsqueda';
+      this.mensaje = 'Ingresa un término de búsqueda';
+      this.mensajeError = true;
       return;
     }
 
     this.buscando = true;
     this.mensaje = '';
+    this.mensajeError = false;
 
     switch (this.tipoBusqueda) {
       case 'nombre':
@@ -331,13 +346,15 @@ export class ProductosComponent implements OnInit {
     this.productoService.buscarPorNombre(this.terminoBusqueda).pipe(
       catchError(error => {
         console.error('Error buscando por nombre:', error);
-        this.mensaje = '❌ Error en búsqueda por nombre';
+        this.mensaje = 'Error en búsqueda por nombre';
+        this.mensajeError = true;
         this.buscando = false;
         return of([]);
       })
     ).subscribe(productos => {
       this.productosFiltered = productos;
-      this.mensaje = `✅ Se encontraron ${productos.length} resultado(s)`;
+      this.mensaje = `Se encontraron ${productos.length} resultado(s)`;
+      this.mensajeError = false;
       this.buscando = false;
       this.cdr.markForCheck();
     });
@@ -350,13 +367,15 @@ export class ProductosComponent implements OnInit {
     this.productoService.buscarGeneral(this.terminoBusqueda).pipe(
       catchError(error => {
         console.error('Error en búsqueda general:', error);
-        this.mensaje = '❌ Error en búsqueda';
+        this.mensaje = 'Error en búsqueda';
+        this.mensajeError = true;
         this.buscando = false;
         return of([]);
       })
     ).subscribe(productos => {
       this.productosFiltered = productos;
-      this.mensaje = `✅ Se encontraron ${productos.length} resultado(s)`;
+      this.mensaje = `Se encontraron ${productos.length} resultado(s)`;
+      this.mensajeError = false;
       this.buscando = false;
       this.cdr.markForCheck();
     });
@@ -369,13 +388,15 @@ export class ProductosComponent implements OnInit {
     this.productoService.buscarPorCategoria(this.terminoBusqueda).pipe(
       catchError(error => {
         console.error('Error buscando por categoría:', error);
-        this.mensaje = '❌ Error en búsqueda por categoría';
+        this.mensaje = 'Error en búsqueda por categoría';
+        this.mensajeError = true;
         this.buscando = false;
         return of([]);
       })
     ).subscribe(productos => {
       this.productosFiltered = productos;
-      this.mensaje = `✅ Se encontraron ${productos.length} producto(s) en esta categoría`;
+      this.mensaje = `Se encontraron ${productos.length} producto(s) en esta categoría`;
+      this.mensajeError = false;
       this.buscando = false;
       this.cdr.markForCheck();
     });
@@ -388,13 +409,15 @@ export class ProductosComponent implements OnInit {
     this.productoService.obtenerProductosConStockBajo().pipe(
       catchError(error => {
         console.error('Error obteniendo productos con stock bajo:', error);
-        this.mensaje = '❌ Error al obtener productos con stock bajo';
+        this.mensaje = 'Error al obtener productos con stock bajo';
+        this.mensajeError = true;
         this.buscando = false;
         return of([]);
       })
     ).subscribe(productos => {
       this.productosFiltered = productos;
-      this.mensaje = `⚠️ ${productos.length} producto(s) con stock por debajo del mínimo`;
+      this.mensaje = `${productos.length} producto(s) con stock por debajo del mínimo`;
+      this.mensajeError = true;
       this.buscando = false;
       this.cdr.markForCheck();
     });
@@ -407,6 +430,7 @@ export class ProductosComponent implements OnInit {
     this.terminoBusqueda = '';
     this.productosFiltered = [];
     this.mensaje = '';
+    this.mensajeError = false;
     this.cdr.markForCheck();
   }
 
@@ -419,7 +443,7 @@ export class ProductosComponent implements OnInit {
     if (container) {
       const fallback = document.createElement('div');
       fallback.className = 'product-icon-fallback';
-      fallback.textContent = '📦';
+      fallback.textContent = '';
       container.appendChild(fallback);
     }
   }

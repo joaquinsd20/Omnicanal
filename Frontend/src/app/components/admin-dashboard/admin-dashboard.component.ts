@@ -8,10 +8,12 @@ import { AdminDashboardResumen, AdminDashboardService } from '../../services/adm
 import { AuthService } from '../../services/auth.service';
 import { Usuario } from '../../models/usuario.model';
 
+import { IconComponent } from '../icon/icon.component';
+
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [IconComponent, CommonModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
