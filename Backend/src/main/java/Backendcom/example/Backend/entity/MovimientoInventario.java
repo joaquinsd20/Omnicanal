@@ -1,5 +1,6 @@
 package Backendcom.example.Backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -46,5 +47,11 @@ public class MovimientoInventario {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    /** Nombre del producto para mostrar en el kardex sin exponer todo el objeto. */
+    @JsonProperty("nombreProducto")
+    public String getNombreProducto() {
+        return producto != null ? producto.getNombreProducto() : null;
     }
 }

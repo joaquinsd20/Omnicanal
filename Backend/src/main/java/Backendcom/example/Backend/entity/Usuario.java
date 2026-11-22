@@ -64,6 +64,7 @@ public class Usuario {
     @Column(columnDefinition = "ENUM('ACTIVO', 'INACTIVO', 'SUSPENDIDO', 'BLOQUEADO')")
     private EstadoUsuario estado = EstadoUsuario.ACTIVO;
 
+    @JsonIgnore // no exponer datos de quien creó la cuenta
     @ManyToOne
     @JoinColumn(name = "id_usuario_creador")
     private Usuario usuarioCreador;
