@@ -34,9 +34,13 @@ public class KardexController {
     @GetMapping("/producto/{idProducto}")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
     public ResponseEntity<List<MovimientoInventario>> obtenerMovimientosDelProducto(
-            @PathVariable Long idProducto) {
+            @PathVariable Long idProducto,
+            @RequestHeader("X-User-Id") Long idUsuario) {
         
-        List<MovimientoInventario> movimientos = movimientoInventarioService.obtenerMovimientosDelProducto(idProducto);
+        // Solo los movimientos del usuario autenticado
+        List<MovimientoInventario> movimientos = movimientoInventarioService.obtenerMovimientosDelProducto(idProducto).stream()
+                .filter(m -> m.getUsuario() != null && idUsuario.equals(m.getUsuario().getIdUsuario()))
+                .toList();
         return ResponseEntity.ok(movimientos);
     }
 
@@ -46,9 +50,13 @@ public class KardexController {
     @GetMapping("/tipo/{tipoMovimiento}")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
     public ResponseEntity<List<MovimientoInventario>> obtenerMovimientosPorTipo(
-            @PathVariable String tipoMovimiento) {
+            @PathVariable String tipoMovimiento,
+            @RequestHeader("X-User-Id") Long idUsuario) {
         
-        List<MovimientoInventario> movimientos = movimientoInventarioService.obtenerMovimientosPorTipo(tipoMovimiento);
+        // Solo los movimientos del usuario autenticado
+        List<MovimientoInventario> movimientos = movimientoInventarioService.obtenerMovimientosPorTipo(tipoMovimiento).stream()
+                .filter(m -> m.getUsuario() != null && idUsuario.equals(m.getUsuario().getIdUsuario()))
+                .toList();
         return ResponseEntity.ok(movimientos);
     }
 }

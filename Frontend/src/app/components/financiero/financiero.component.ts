@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { DashboardService, DashboardResumen, ResumenDiario, TendenciaDia, ProductoTop } from '../../services/dashboard.service';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -13,50 +16,68 @@ import { IconComponent } from '../icon/icon.component';
   styleUrls: ['./financiero.component.css']
 })
 export class FinancieroComponent implements OnInit {
-  // Datos financieros de ejemplo
+  // Todo se carga desde la API (/dashboard/*); arranca en cero mientras llega.
+  cargando = true;
+
   dashboardFinanciero = {
-    totalIngresos: 5240.50,
-    totalCostos: 2850.30,
-    gananciaNeta: 2390.20,
-    margenNeto: 45.6,
-    ventasDelDia: 12,
-    ticketPromedio: 436.70,
-    valorInventario: 8500.00,
-    productosVendidos: 47
+    totalIngresos: 0,
+    totalCostos: 0,
+    gananciaNeta: 0,
+    margenNeto: 0,
+    ventasDelDia: 0,
+    ticketPromedio: 0,
+    valorInventario: 0,
+    productosVendidos: 0
   };
 
-  resumenDiario = {
-    ingresos: 1250.50,
-    costos: 680.30,
-    ganancia: 570.20,
-    ventasHoy: 4
+  resumenDiario = { ingresos: 0, costos: 0, ganancia: 0, ventasHoy: 0 };
+
+  ventasUltimos7Dias: { fecha: string; ingresos: number }[] = [];
+
+  topProductos: { nombre: string; vendidos: number; ingresos: number }[] = [];
+
+  private readonly dias: Record<string, string> = {
+    MON: 'Lun', TUE: 'Mar', WED: 'Mié', THU: 'Jue', FRI: 'Vie', SAT: 'Sáb', SUN: 'Dom', Hoy: 'Hoy'
   };
-
-  ventasUltimos7Dias = [
-    { fecha: 'Lunes', ingresos: 450 },
-    { fecha: 'Martes', ingresos: 620 },
-    { fecha: 'Miércoles', ingresos: 380 },
-    { fecha: 'Jueves', ingresos: 910 },
-    { fecha: 'Viernes', ingresos: 1250 },
-    { fecha: 'Sábado', ingresos: 780 },
-    { fecha: 'Hoy', ingresos: 850 }
-  ];
-
-  topProductos = [
-    { nombre: 'Smartphone X200', vendidos: 12, ingresos: 3600 },
-    { nombre: 'Auriculares Inalámbricos', vendidos: 25, ingresos: 1750 },
-    { nombre: 'Mochila Impermeable', vendidos: 10, ingresos: 600 }
-  ];
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private dashboardService: DashboardService
   ) { }
 
   ngOnInit() {
     if (!this.authService.getUsuarioActual()) {
       this.router.navigate(['/login']);
+      return;
     }
+    forkJoin({
+      resumen: this.dashboardService.obtenerResumen().pipe(catchError(() => of(null as DashboardResumen | null))),
+      diario: this.dashboardService.obtenerResumenDiario().pipe(catchError(() => of(null as ResumenDiario | null))),
+      tendencia: this.dashboardService.obtenerTendencia7Dias().pipe(catchError(() => of([] as TendenciaDia[]))),
+      top: this.dashboardService.obtenerTopProductos(5).pipe(catchError(() => of([] as ProductoTop[])))
+    }).subscribe(({ resumen, diario, tendencia, top }) => {
+      const n = (v: unknown) => Number(v ?? 0);
+      this.dashboardFinanciero = {
+        totalIngresos: n(resumen?.totalIngresos),
+        totalCostos: n(resumen?.totalCostos),
+        gananciaNeta: n(resumen?.gananciaNeta),
+        margenNeto: n(resumen?.margenNetoPct),
+        ventasDelDia: n(resumen?.totalVentas),
+        ticketPromedio: n(resumen?.ticketPromedio),
+        valorInventario: n(resumen?.valorInventario),
+        productosVendidos: n(diario?.productosVendidos)
+      };
+      this.resumenDiario = {
+        ingresos: n(diario?.ingresos),
+        costos: n(diario?.costos),
+        ganancia: n(diario?.ganancia),
+        ventasHoy: n(diario?.ventasHoy)
+      };
+      this.ventasUltimos7Dias = tendencia.map(d => ({ fecha: this.dias[d.fecha] ?? d.fecha, ingresos: n(d.ingresos) }));
+      this.topProductos = top.map(p => ({ nombre: p.nombreProducto, vendidos: n(p.cantidadVendida), ingresos: n(p.ingresos) }));
+      this.cargando = false;
+    });
   }
 
   volver() {
@@ -64,7 +85,7 @@ export class FinancieroComponent implements OnInit {
   }
 
   getMaxIngresos() {
-    return Math.max(...this.ventasUltimos7Dias.map(v => v.ingresos));
+    return Math.max(1, ...this.ventasUltimos7Dias.map(v => v.ingresos));
   }
 
   getPorcentajeVenta(ingresos: number) {

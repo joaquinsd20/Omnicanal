@@ -42,8 +42,10 @@ public class VentaController {
     private final MovimientoInventarioService movimientoInventarioService;
 
     @GetMapping
-    public ResponseEntity<List<Venta>> getAllVentas() {
-        return ResponseEntity.ok(ventaRepository.findAll());
+    @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
+    public ResponseEntity<List<Venta>> getAllVentas(@RequestHeader("X-User-Id") Long idUsuario) {
+        // Cada usuario solo ve sus propias ventas
+        return ResponseEntity.ok(ventaRepository.findByUsuarioIdUsuario(idUsuario));
     }
 
     /** Paginación con Spring Boot para ventas. */
@@ -58,10 +60,17 @@ public class VentaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Venta> getVentaById(@PathVariable Long id) {
-        Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Venta no encontrada"));
-        return ResponseEntity.ok(venta);
+    @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
+    public ResponseEntity<Venta> getVentaById(@PathVariable Long id,
+                                              @RequestHeader("X-User-Id") Long idUsuario) {
+        return ResponseEntity.ok(ventaPropia(id, idUsuario));
+    }
+
+    /** Devuelve la venta solo si pertenece al usuario autenticado; si no, 404. */
+    private Venta ventaPropia(Long id, Long idUsuario) {
+        return ventaRepository.findById(id)
+                .filter(v -> v.getUsuario() != null && idUsuario.equals(v.getUsuario().getIdUsuario()))
+                .orElseThrow(() -> new Backendcom.example.Backend.exception.ResourceNotFoundException("Venta no encontrada"));
     }
 
     @GetMapping("/usuario/{idUsuario}")
@@ -185,8 +194,7 @@ public class VentaController {
     public ResponseEntity<Venta> updateVenta(@PathVariable Long id,
                                              @Valid @RequestBody Venta venta,
                                              @RequestHeader("X-User-Id") Long idUsuario) {
-        Venta existente = ventaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Venta no encontrada"));
+        Venta existente = ventaPropia(id, idUsuario);
         venta.setIdVenta(id);
         venta.setUsuario(existente.getUsuario());
         
@@ -196,10 +204,9 @@ public class VentaController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
-    public ResponseEntity<Void> deleteVenta(@PathVariable Long id) {
-        if (!ventaRepository.existsById(id)) {
-            throw new IllegalArgumentException("Venta no encontrada");
-        }
+    public ResponseEntity<Void> deleteVenta(@PathVariable Long id,
+                                            @RequestHeader("X-User-Id") Long idUsuario) {
+        ventaPropia(id, idUsuario);
         ventaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

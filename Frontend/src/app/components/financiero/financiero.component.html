@@ -14,29 +14,29 @@
     <section class="hero-finance">
       <div>
         <span class="eyebrow light">Salud del negocio</span>
-        <h2>S/. {{ dashboardFinanciero.gananciaNeta.toFixed(2) }}</h2>
+        <h2>S/ {{ dashboardFinanciero.gananciaNeta.toFixed(2) }}</h2>
         <p>Ganancia neta mensual con margen de {{ dashboardFinanciero.margenNeto }}%.</p>
       </div>
       <div class="hero-pill">
         <span>Ticket promedio</span>
-        <strong>S/. {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
+        <strong>S/ {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
       </div>
     </section>
 
     <section class="kpi-grid">
       <article class="kpi-card income">
         <span>Ingreso total</span>
-        <strong>S/. {{ dashboardFinanciero.totalIngresos.toFixed(2) }}</strong>
-        <small>{{ dashboardFinanciero.ventasDelDia }} ventas hoy</small>
+        <strong>S/ {{ dashboardFinanciero.totalIngresos.toFixed(2) }}</strong>
+        <small>{{ dashboardFinanciero.ventasDelDia }} ventas este mes</small>
       </article>
       <article class="kpi-card success">
         <span>Ganancia neta</span>
-        <strong>S/. {{ dashboardFinanciero.gananciaNeta.toFixed(2) }}</strong>
+        <strong>S/ {{ dashboardFinanciero.gananciaNeta.toFixed(2) }}</strong>
         <small>{{ dashboardFinanciero.margenNeto }}% margen</small>
       </article>
       <article class="kpi-card danger">
         <span>Costos totales</span>
-        <strong>S/. {{ dashboardFinanciero.totalCostos.toFixed(2) }}</strong>
+        <strong>S/ {{ dashboardFinanciero.totalCostos.toFixed(2) }}</strong>
         <small>Importaciones + logística</small>
       </article>
     </section>
@@ -55,7 +55,7 @@
               <div class="bar" [style.height.%]="getPorcentajeVenta(dia.ingresos)"></div>
             </div>
             <span class="bar-label">{{ dia.fecha }}</span>
-            <strong>S/. {{ dia.ingresos }}</strong>
+            <strong>S/ {{ dia.ingresos | number:'1.0-0' }}</strong>
           </div>
         </div>
       </article>
@@ -70,15 +70,15 @@
         <div class="today-list">
           <div class="today-item">
             <span>Ingresos</span>
-            <strong class="green">S/. {{ resumenDiario.ingresos.toFixed(2) }}</strong>
+            <strong class="green">S/ {{ resumenDiario.ingresos.toFixed(2) }}</strong>
           </div>
           <div class="today-item">
             <span>Costos</span>
-            <strong class="red">S/. {{ resumenDiario.costos.toFixed(2) }}</strong>
+            <strong class="red">S/ {{ resumenDiario.costos.toFixed(2) }}</strong>
           </div>
           <div class="today-item">
             <span>Ganancia</span>
-            <strong class="blue">S/. {{ resumenDiario.ganancia.toFixed(2) }}</strong>
+            <strong class="blue">S/ {{ resumenDiario.ganancia.toFixed(2) }}</strong>
           </div>
           <div class="today-item">
             <span>Ventas</span>
@@ -103,7 +103,7 @@
               <h3>{{ producto.nombre }}</h3>
               <p>{{ producto.vendidos }} unidades vendidas</p>
             </div>
-            <strong>S/. {{ producto.ingresos }}</strong>
+            <strong>S/ {{ producto.ingresos | number:'1.2-2' }}</strong>
           </div>
         </div>
       </article>
@@ -120,14 +120,14 @@
             <span><app-icon name="target" [size]="18" /></span>
             <div>
               <small>Ticket promedio</small>
-              <strong>S/. {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
+              <strong>S/ {{ dashboardFinanciero.ticketPromedio.toFixed(2) }}</strong>
             </div>
           </div>
           <div class="indicator">
             <span><app-icon name="package" [size]="18" /></span>
             <div>
               <small>Valor inventario</small>
-              <strong>S/. {{ dashboardFinanciero.valorInventario.toFixed(2) }}</strong>
+              <strong>S/ {{ dashboardFinanciero.valorInventario.toFixed(2) }}</strong>
             </div>
           </div>
           <div class="indicator">

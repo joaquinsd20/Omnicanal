@@ -39,9 +39,13 @@ public class ImportacionController {
     @GetMapping("/{idImportacion}")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
     public ResponseEntity<ImportacionResponse> obtenerImportacion(
-            @PathVariable Long idImportacion) {
+            @PathVariable Long idImportacion,
+            @RequestHeader("X-User-Id") Long idUsuario) {
         
         ImportacionResponse response = importacionService.obtenerImportacion(idImportacion);
+        if (response == null || !idUsuario.equals(response.getIdUsuario())) {
+            throw new Backendcom.example.Backend.exception.ResourceNotFoundException("Importación no encontrada");
+        }
         return ResponseEntity.ok(response);
     }
 

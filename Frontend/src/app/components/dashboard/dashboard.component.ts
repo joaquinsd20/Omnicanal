@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { VentaService } from '../../services/venta.service';
 import { ProductoService } from '../../services/producto.service';
 import { ImportacionService } from '../../services/importacion.service';
+import { DashboardService, ResumenDiario } from '../../services/dashboard.service';
 import { Usuario } from '../../models/usuario.model';
 import { Venta } from '../../models/venta.model';
 import { Producto } from '../../models/producto.model';
@@ -39,6 +40,7 @@ export class DashboardComponent implements OnInit {
         private ventaService: VentaService,
         private productoService: ProductoService,
         private importacionService: ImportacionService,
+        private dashboardService: DashboardService,
         private router: Router
     ) { }
 
@@ -53,121 +55,33 @@ export class DashboardComponent implements OnInit {
     }
 
     cargarDatos() {
-        if (!this.usuarioActual) return;
-
-        // Datos mock para KPIs
-        this.ventasHoy = 4;
-        this.totalIngresos = 1250.50;
-        this.totalCostos = 680.30;
-        this.gananciaNeta = this.totalIngresos - this.totalCostos;
-
-        this.ventasRecientes = [
-            {
-                idVenta: 1,
-                numeroVenta: 'V-2026-001',
-                nombreCliente: 'Juan Pérez',
-                subtotal: 381.36,
-                total: 450.00,
-                estadoVenta: 'entregada',
-                estadoPago: 'pagado',
-                fechaVenta: new Date()
-            },
-            {
-                idVenta: 2,
-                numeroVenta: 'V-2026-002',
-                nombreCliente: 'María García',
-                subtotal: 271.61,
-                total: 320.50,
-                estadoVenta: 'enviada',
-                estadoPago: 'pagado',
-                fechaVenta: new Date()
-            },
-            {
-                idVenta: 3,
-                numeroVenta: 'V-2026-003',
-                nombreCliente: 'Carlos López',
-                subtotal: 406.78,
-                total: 480.00,
-                estadoVenta: 'pendiente',
-                estadoPago: 'pendiente',
-                fechaVenta: new Date()
-            }
-        ];
-
-        this.productosStockBajo = [
-            {
-                idProducto: 1,
-                nombreProducto: 'Smartphone X200',
-                sku: 'SKU-PHONE-001',
-                stockTotal: 3,
-                precioCosto: 150,
-                precioVenta: 300
-            },
-            {
-                idProducto: 2,
-                nombreProducto: 'Auriculares Inalámbricos',
-                sku: 'SKU-AUDIO-001',
-                stockTotal: 8,
-                precioCosto: 25,
-                precioVenta: 70
-            }
-        ];
-
-        // Mostrar dashboard rápido (dejar de cargar)
-        this.loading = false;
-
-        // Cargar datos del backend después
         const idUsuario = this.usuarioActual?.idUsuario;
-        
-        if (idUsuario) {
-            // Cargar importaciones
-            this.importacionService.obtenerImportaciones(idUsuario).subscribe({
-                next: (importaciones) => {
-                    console.log('Importaciones cargadas:', importaciones);
-                    this.importacionesRecientes = importaciones.slice(0, 3);
-                },
-                error: (error) => {
-                    console.error('Error importaciones:', error);
-                    this.importacionesRecientes = [];
-                }
-            });
+        if (!idUsuario) return;
 
-            // Cargar kardex
-            this.importacionService.obtenerKardex(idUsuario).subscribe({
-                next: (movimientos) => {
-                    console.log('Kardex cargado:', movimientos);
-                    this.movimientosRecientes = movimientos.slice(0, 5);
-                },
-                error: (error) => {
-                    console.error('Error kardex:', error);
-                    this.movimientosRecientes = [];
-                }
-            });
+        forkJoin({
+            diario: this.dashboardService.obtenerResumenDiario().pipe(catchError(() => of(null as ResumenDiario | null))),
+            ventas: this.ventaService.obtenerPorUsuario(idUsuario).pipe(catchError(() => of([] as Venta[]))),
+            stockBajo: this.productoService.obtenerProductosConStockBajo().pipe(catchError(() => of([] as Producto[]))),
+            importaciones: this.importacionService.obtenerImportaciones(idUsuario).pipe(catchError(() => of([] as any[]))),
+            kardex: this.importacionService.obtenerKardex(idUsuario).pipe(catchError(() => of([] as any[]))),
+            canales: this.ventaService.obtenerVentasPorCanal().pipe(catchError(() => of([] as any[])))
+        }).subscribe(({ diario, ventas, stockBajo, importaciones, kardex, canales }) => {
+            // Indicadores del día (calculados en el backend)
+            this.ventasHoy = diario?.ventasHoy ?? 0;
+            this.totalIngresos = diario?.ingresos ?? 0;
+            this.totalCostos = diario?.costos ?? 0;
+            this.gananciaNeta = diario?.ganancia ?? 0;
 
-            // Cargar productos con stock bajo desde backend
-            this.productoService.obtenerProductosConStockBajo().subscribe({
-                next: (productos) => {
-                    console.log('Productos con stock bajo:', productos);
-                    this.productosStockBajo = productos.slice(0, 5);
-                },
-                error: (error) => {
-                    console.error('Error stock bajo:', error);
-                    this.productosStockBajo = [];
-                }
-            });
-
-            // Cargar ventas por canal
-            this.ventaService.obtenerVentasPorCanal().subscribe({
-                next: (ventasPorCanal) => {
-                    console.log('Ventas por canal:', ventasPorCanal);
-                    this.ventasPorCanal = ventasPorCanal;
-                },
-                error: (error) => {
-                    console.error('Error ventas por canal:', error);
-                    this.ventasPorCanal = [];
-                }
-            });
-        }
+            // Listas: lo más reciente primero
+            this.ventasRecientes = [...ventas]
+                .sort((x, y) => new Date(y.fechaVenta ?? 0).getTime() - new Date(x.fechaVenta ?? 0).getTime())
+                .slice(0, 5);
+            this.productosStockBajo = stockBajo.slice(0, 5);
+            this.importacionesRecientes = importaciones.slice(0, 3);
+            this.movimientosRecientes = kardex.slice(0, 5);
+            this.ventasPorCanal = canales;
+            this.loading = false;
+        });
     }
 
     navegarA(ruta: string) {

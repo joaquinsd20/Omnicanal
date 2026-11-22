@@ -29,6 +29,7 @@ public class UsuarioController {
      * GET /api/usuarios - Obtener todos los usuarios (endpoint legado)
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMINISTRADOR_GLOBAL')")
     public ResponseEntity<List<Usuario>> getAllUsuarios() {
         return ResponseEntity.ok(usuarioRepository.findAll());
     }
@@ -37,6 +38,7 @@ public class UsuarioController {
      * GET /api/usuarios/{id} - Obtener usuario por ID (endpoint legado)
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMINISTRADOR_GLOBAL')")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", "id", id));
@@ -47,6 +49,7 @@ public class UsuarioController {
      * GET /api/usuarios/email/{email} - Obtener usuario por email (endpoint legado)
      */
     @GetMapping("/email/{email}")
+    @PreAuthorize("hasRole('ADMINISTRADOR_GLOBAL')")
     public ResponseEntity<Usuario> getUsuarioByEmail(@PathVariable String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario", "email", email));

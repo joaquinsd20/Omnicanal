@@ -23,11 +23,10 @@ public class ProductoController {
     private final ProductoRepository productoRepository;
 
     @GetMapping
-    public ResponseEntity<List<Producto>> getAllProductos(@RequestHeader(value = "X-User-Id", required = false) Long idUsuario) {
-        if (idUsuario != null) {
-            return ResponseEntity.ok(productoService.obtenerProductosPorUsuario(idUsuario));
-        }
-        return ResponseEntity.ok(productoRepository.findAll());
+    @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
+    public ResponseEntity<List<Producto>> getAllProductos(@RequestHeader("X-User-Id") Long idUsuario) {
+        // Cada usuario solo ve sus propios productos
+        return ResponseEntity.ok(productoService.obtenerProductosPorUsuario(idUsuario));
     }
 
     /**
@@ -57,9 +56,19 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> getProductoById(@PathVariable Long id) {
-        Producto producto = productoService.obtenerProductoPorId(id);
-        return ResponseEntity.ok(producto);
+    @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
+    public ResponseEntity<Producto> getProductoById(@PathVariable Long id,
+                                                    @RequestHeader("X-User-Id") Long idUsuario) {
+        return ResponseEntity.ok(productoPropio(id, idUsuario));
+    }
+
+    /** Devuelve el producto solo si pertenece al usuario autenticado; si no, 404. */
+    private Producto productoPropio(Long id, Long idUsuario) {
+        Producto p = productoService.obtenerProductoPorId(id);
+        if (p.getUsuario() == null || !idUsuario.equals(p.getUsuario().getIdUsuario())) {
+            throw new Backendcom.example.Backend.exception.ResourceNotFoundException("Producto no encontrado");
+        }
+        return p;
     }
 
     @GetMapping("/usuario/{idUsuario}")
@@ -149,8 +158,9 @@ public class ProductoController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
     public ResponseEntity<Producto> updateProducto(@PathVariable Long id,
-                                                   @Valid @RequestBody Producto producto) {
-        Producto existente = productoService.obtenerProductoPorId(id);
+                                                   @Valid @RequestBody Producto producto,
+                                                   @RequestHeader("X-User-Id") Long idUsuario) {
+        Producto existente = productoPropio(id, idUsuario);
 
         // Si cambió el SKU, validar que no choque con otro producto.
         productoRepository.findBySku(producto.getSku()).ifPresent(p -> {
@@ -166,7 +176,9 @@ public class ProductoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('EMPRENDEDOR', 'ADMINISTRADOR', 'ADMINISTRADOR_GLOBAL', 'SUPERVISOR')")
-    public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProducto(@PathVariable Long id,
+                                               @RequestHeader("X-User-Id") Long idUsuario) {
+        productoPropio(id, idUsuario);
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }
