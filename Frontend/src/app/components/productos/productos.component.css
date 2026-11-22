@@ -23,19 +23,11 @@
   gap: 18px;
 }
 
-.eyebrow {
-  display: inline-flex;
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
+.eyebrow { display: none; }
 
 .module-header h1 {
   margin: 0;
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: 28px;
   letter-spacing: -1.2px;
 }
 
@@ -81,7 +73,7 @@
   color: var(--muted);
   font-size: 12px;
   font-weight: 950;
-  text-transform: uppercase;
+  
   letter-spacing: 0.06em;
 }
 
@@ -108,7 +100,7 @@
 
 .toolbar-card h2 {
   margin: 0 0 6px;
-  font-size: 22px;
+  font-size: 18px;
 }
 
 .toolbar-card p {
@@ -232,7 +224,7 @@
   color: var(--muted);
   font-size: 11px;
   font-weight: 850;
-  text-transform: uppercase;
+  
   letter-spacing: 0.05em;
   margin-bottom: 5px;
 }
@@ -305,7 +297,7 @@
 
 .modal-header h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: 18px;
   letter-spacing: -0.8px;
 }
 
@@ -425,7 +417,7 @@
 .search-filters label {
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  
   color: var(--muted);
 }
 

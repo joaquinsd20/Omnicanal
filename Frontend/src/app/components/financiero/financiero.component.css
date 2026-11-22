@@ -23,15 +23,7 @@
   gap: 18px;
 }
 
-.eyebrow {
-  display: inline-flex;
-  color: var(--primary);
-  font-size: 12px;
-  font-weight: 950;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
+.eyebrow { display: none; }
 
 .eyebrow.light {
   color: var(--border);
@@ -39,7 +31,7 @@
 
 .module-header h1 {
   margin: 0;
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: 28px;
   letter-spacing: -1.2px;
 }
 
@@ -68,8 +60,8 @@
 
 .hero-finance h2 {
   margin: 0;
-  font-size: clamp(38px, 6vw, 66px);
-  letter-spacing: -2px;
+  font-size: 28px;
+  letter-spacing: -0.02em;
 }
 
 .hero-finance p {
@@ -81,17 +73,17 @@
   min-width: 230px;
   padding: 18px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.13);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   
 }
 
 .hero-pill span {
   display: block;
-  color: rgba(255, 255, 255, 0.70);
+  color: var(--muted);
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
+  
   letter-spacing: 0.06em;
   margin-bottom: 6px;
 }
@@ -137,7 +129,7 @@
   color: var(--muted);
   font-size: 12px;
   font-weight: 950;
-  text-transform: uppercase;
+  
   letter-spacing: 0.06em;
 }
 
@@ -174,7 +166,7 @@
 
 .panel-header h2 {
   margin: 0;
-  font-size: 23px;
+  font-size: 18px;
   letter-spacing: -0.5px;
 }
 

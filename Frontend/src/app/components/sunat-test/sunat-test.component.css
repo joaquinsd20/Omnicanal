@@ -9,10 +9,10 @@
 
 .sunat-header {
   text-align: center;
-  color: white;
+  color: var(--text);
   margin-bottom: 30px;
   padding: 20px;
-  background: rgba(0, 0, 0, 0.2);
+  background: transparent;
   border-radius: 10px;
 }
 
@@ -53,7 +53,7 @@
 
 .info {
   background: #e3f2fd;
-  border-left: 4px solid #2196f3;
+  
   padding: 12px;
   border-radius: 4px;
   font-size: 0.9rem;
@@ -147,42 +147,16 @@ select.input-field {
   cursor: not-allowed;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: white;
-  box-shadow: var(--shadow-soft);
-}
+.btn-info { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
-.btn-primary:hover:not(:disabled) {
-  transform: none;
-  box-shadow: var(--shadow-soft);
-}
-
-.btn-secondary {
-  background: #f5f5f5;
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: #efefef;
-}
-
-.btn-info {
-  background: #2196f3;
-  color: white;
-}
-
-.btn-info:hover:not(:disabled) {
-  background: #1976d2;
-}
+.btn-info:hover:not(:disabled) { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
 /* ALERTAS */
 .alert {
   padding: 15px;
   border-radius: 6px;
   margin-top: 15px;
-  border-left: 4px solid;
+  
 }
 
 .alert h3 {

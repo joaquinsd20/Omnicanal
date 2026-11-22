@@ -127,23 +127,9 @@
   white-space: nowrap;
 }
 
-.btn-secondary {
-  background-color: var(--muted);
-  color: white;
-}
+.btn-info { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
-.btn-secondary:hover {
-  background-color: var(--muted);
-}
-
-.btn-info {
-  background-color: var(--accent);
-  color: white;
-}
-
-.btn-info:hover {
-  background-color: var(--accent);
-}
+.btn-info:hover { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
 
 .tabla-section {
   background-color: white;
@@ -189,10 +175,7 @@
   margin-top: 10px;
 }
 
-.tabla-kardex thead {
-  background-color: #34495e;
-  color: white;
-}
+.tabla-kardex thead { background: var(--surface-2); color: var(--muted); }
 
 .tabla-kardex th {
   padding: 12px;
@@ -214,19 +197,19 @@
 }
 
 .tabla-kardex tbody tr.tipo-entrada {
-  border-left: 4px solid var(--success);
+  
 }
 
 .tabla-kardex tbody tr.tipo-salida {
-  border-left: 4px solid var(--danger);
+  
 }
 
 .tabla-kardex tbody tr.tipo-ajuste {
-  border-left: 4px solid var(--accent);
+  
 }
 
 .tabla-kardex tbody tr.tipo-devolución {
-  border-left: 4px solid var(--warning);
+  
 }
 
 .fecha {
