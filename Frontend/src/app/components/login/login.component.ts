@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -21,7 +21,7 @@ export class LoginComponent implements OnInit {
   error = '';
   info = '';
   loading = false;
-  servidorLento = false;
+  servidorLento = signal(false);
   private lentoTimer?: ReturnType<typeof setTimeout>;
 
   /** Cuenta pública de demostración (datos de ejemplo). */
@@ -115,13 +115,13 @@ export class LoginComponent implements OnInit {
 
   private iniciarCarga(): void {
     this.loading = true;
-    this.servidorLento = false;
-    this.lentoTimer = setTimeout(() => (this.servidorLento = true), 4000);
+    this.servidorLento.set(false);
+    this.lentoTimer = setTimeout(() => (this.servidorLento.set(true)), 4000);
   }
 
   private terminarCarga(): void {
     this.loading = false;
-    this.servidorLento = false;
+    this.servidorLento.set(false);
     clearTimeout(this.lentoTimer);
   }
 

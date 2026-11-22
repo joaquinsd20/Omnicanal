@@ -81,7 +81,7 @@
           {{ loading ? 'Validando acceso...' : 'Ingresar al sistema' }}
         </button>
 
-        <div class="info-message" *ngIf="loading && servidorLento" role="status">
+        <div class="info-message" *ngIf="loading && servidorLento()" role="status">
           El servidor gratuito se está activando. La primera carga puede tardar hasta un minuto.
         </div>
 
