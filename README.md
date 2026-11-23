@@ -1,6 +1,6 @@
-# 🚀 Omnicanal - Sistema Web de Gestión de Importaciones y Ventas Omnicanal
+#  Omnicanal - Sistema Web de Gestión de Importaciones y Ventas Omnicanal
 
-## 📋 Descripción General
+##  Descripción General
 
 **Omnicanal** es una plataforma SaaS completa diseñada para democratizar la tecnología empresarial, ofreciendo a micro y pequeños importadores y vendedores de redes sociales en Perú y Latinoamérica una solución de **bajo costo, intuitiva y móvil**.
 
@@ -14,7 +14,7 @@
 
 ---
 
-## 🛠️ Stack Tecnológico
+##  Stack Tecnológico
 
 - **Frontend**: Angular 21 (Standalone Components, lazy loading)
 - **Backend**: Spring Boot 4.0.6
@@ -86,7 +86,7 @@ Proyecto/
 
 ---
 
-## 🚀 Cómo correrlo en local
+##  Cómo correrlo en local
 
 ### Requisitos
 
@@ -149,7 +149,7 @@ Render: *New Web Service* → repo → *Root Directory* `Backend` → *Runtime* 
 
 ---
 
-## 📊 Datos de prueba
+##  Datos de prueba
 
 | Rol | Email | Contraseña |
 |---|---|---|
@@ -180,25 +180,25 @@ El registro público siempre crea cuentas de tipo **Emprendedor**; los administr
 
 ---
 
-## 🎨 Características de Diseño (UI/UX)
+##  Características de Diseño (UI/UX)
 
-✅ **Mobile-First Responsive Design**
+ **Mobile-First Responsive Design**
 - Optimizado para celulares
 - Diseño fluido para tablets y desktop
 - Botones grandes y fáciles de tocar
 
-✅ **Interfaz Moderna (Estilo Yape/Apps Bancarias)**
+ **Interfaz Moderna (Estilo Yape/Apps Bancarias)**
 - Gradientes atractivos (Morado -> Azul)
 - Tarjetas limpias y organizadas
 - Tipografía clara y legible
 
-✅ **Componentes Funcionales**
+ **Componentes Funcionales**
 - Formularios intuitivos con validación
 - Modales para crear/editar registros
 - Listas dinámicas con filtros
 - Gráficos de barras para análisis
 
-✅ **Navegación Intuitiva**
+ **Navegación Intuitiva**
 - Menú hamburguesa en móvil
 - Navbar sticky
 - Enlaces de navegación rápida
@@ -225,7 +225,7 @@ El registro público siempre crea cuentas de tipo **Emprendedor**; los administr
 
 ---
 
-## 🔒 Seguridad
+##  Seguridad
 
 - Secretos (BD, JWT) solo en variables de entorno; nada sensible en el código.
 - Contraseñas con BCrypt; la contraseña nunca se devuelve en las respuestas.
@@ -236,11 +236,11 @@ El registro público siempre crea cuentas de tipo **Emprendedor**; los administr
 
 ---
 
-## 🚧 Próximos Pasos (Fase 2)
+##  Próximos Pasos (Fase 2)
 
-1. ✅ **Base de datos** - Completada
-2. ✅ **Backend básico** - Completado (CRUD APIs)
-3. ✅ **Frontend básico** - Completado (UI presentable)
+1.  **Base de datos** - Completada
+2.  **Backend básico** - Completado (CRUD APIs)
+3.  **Frontend básico** - Completado (UI presentable)
 4. ⏳ **Autenticación JWT** - Por implementar
 5. ⏳ **Validaciones avanzadas** - Por implementar
 6. ⏳ **Escaneo OCR de facturas** - Por integrar
@@ -251,11 +251,9 @@ El registro público siempre crea cuentas de tipo **Emprendedor**; los administr
 
 ---
 
-## 📞 Soporte
+##  Soporte
 
 Para reportar bugs o sugerencias, contacta al equipo de desarrollo.
 
 ---
 
-**Omnicanal v0.1.0 - MVP (Minimum Viable Product)**
-*Desarrollado para presentación rápida - Funcionalidad completa en desarrollo*
