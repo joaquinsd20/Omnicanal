@@ -9,16 +9,31 @@
     <div class="hero-copy">
       <h1>Conoce el costo real de cada producto que importas.</h1>
       <p>Inventario, ventas por canal y prorrateo de flete y aduanas en un solo sistema, pensado para importadores en Perú.</p>
-      <ul class="feature-list">
-        <li><app-icon name="package" /><span>Kardex automático</span></li>
-        <li><app-icon name="plane" /><span>Costeo de importaciones</span></li>
-        <li><app-icon name="chart" /><span>Margen por producto</span></li>
-      </ul>
     </div>
 
-    <figure class="app-shot" aria-hidden="true">
-      <img src="app-preview.webp" alt="" width="800" height="500" loading="eager" decoding="async">
-    </figure>
+    <ol class="flow" aria-label="Cómo funciona">
+      <li>
+        <span class="flow-icon"><app-icon name="plane" [size]="18" /></span>
+        <div>
+          <strong>Registra tu importación</strong>
+          <span>Factura del proveedor, flete, aduanas y tipo de cambio.</span>
+        </div>
+      </li>
+      <li>
+        <span class="flow-icon"><app-icon name="coins" [size]="18" /></span>
+        <div>
+          <strong>Omnicanal prorratea los gastos</strong>
+          <span>Reparte cada costo entre los productos de la compra.</span>
+        </div>
+      </li>
+      <li>
+        <span class="flow-icon"><app-icon name="trending" [size]="18" /></span>
+        <div>
+          <strong>Vende con margen real</strong>
+          <span>Precio, stock y ganancia por producto en cada canal.</span>
+        </div>
+      </li>
+    </ol>
   </section>
 
   <section class="auth-panel">
