@@ -196,7 +196,7 @@
   width: 100%;
   min-height: 12%;
   border-radius: 4px;
-  background: var(--text-2);
+  background: var(--brand);
   box-shadow: var(--shadow-soft);
 }
 

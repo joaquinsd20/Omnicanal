@@ -9,3 +9,7 @@
   .dash-grid { grid-template-columns: 1fr; }
   .span-2 { grid-column: auto; }
 }
+
+.page-header h1 { font-size: 24px; }
+.list-row:hover { background: var(--surface-2); }
+.list-row { padding-left: 6px; padding-right: 6px; margin: 0 -6px; }

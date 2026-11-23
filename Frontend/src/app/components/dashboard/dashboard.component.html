@@ -13,22 +13,22 @@
   <section class="stat-grid">
     <div class="stat">
       <span class="stat-label">Ingresos de hoy <app-icon name="receipt" /></span>
-      <strong class="stat-value">S/ {{ totalIngresos | number:'1.2-2' }}</strong>
+      <strong class="stat-value" [countUp]="totalIngresos" prefix="S/ " [decimals]="2"></strong>
       <span class="stat-hint">{{ ventasHoy }} ventas registradas</span>
     </div>
-    <div class="stat">
+    <div class="stat tone-green">
       <span class="stat-label">Ganancia neta <app-icon name="trending" /></span>
-      <strong class="stat-value">S/ {{ gananciaNeta | number:'1.2-2' }}</strong>
+      <strong class="stat-value" [countUp]="gananciaNeta" prefix="S/ " [decimals]="2"></strong>
       <span class="stat-hint">Margen operativo del día</span>
     </div>
-    <div class="stat">
+    <div class="stat tone-amber">
       <span class="stat-label">Stock bajo <app-icon name="alert" /></span>
-      <strong class="stat-value">{{ productosStockBajo.length }}</strong>
+      <strong class="stat-value" [countUp]="productosStockBajo.length"></strong>
       <span class="stat-hint">Productos por reponer</span>
     </div>
-    <div class="stat">
+    <div class="stat tone-sky">
       <span class="stat-label">Importaciones <app-icon name="plane" /></span>
-      <strong class="stat-value">{{ importacionesRecientes.length }}</strong>
+      <strong class="stat-value" [countUp]="importacionesRecientes.length"></strong>
       <span class="stat-hint">Últimos 30 días</span>
     </div>
   </section>
@@ -41,7 +41,7 @@
       </div>
       <div class="list" *ngIf="ventasRecientes.length > 0; else sinVentas">
         <div class="list-row" *ngFor="let venta of ventasRecientes">
-          <span class="chip">{{ venta.nombreCliente.charAt(0) }}</span>
+          <span class="chip brand">{{ venta.nombreCliente.charAt(0) }}</span>
           <div class="list-main">
             <strong>{{ venta.nombreCliente }}</strong>
             <small>{{ venta.numeroVenta }}</small>
@@ -122,8 +122,17 @@
 </div>
 
 <ng-template #cargando>
-  <div class="loading-state">
-    <span class="spinner-sm"></span>
-    <p>Cargando datos…</p>
+  <div class="page" aria-busy="true" aria-label="Cargando datos">
+    <div class="skeleton" style="height: 44px; width: 260px"></div>
+    <section class="stat-grid">
+      <div class="skeleton" style="height: 112px"></div>
+      <div class="skeleton" style="height: 112px"></div>
+      <div class="skeleton" style="height: 112px"></div>
+      <div class="skeleton" style="height: 112px"></div>
+    </section>
+    <section class="dash-grid">
+      <div class="skeleton span-2" style="height: 220px"></div>
+      <div class="skeleton" style="height: 220px"></div>
+    </section>
   </div>
 </ng-template>

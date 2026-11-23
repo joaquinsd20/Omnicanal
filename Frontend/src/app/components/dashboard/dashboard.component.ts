@@ -13,11 +13,12 @@ import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { IconComponent } from '../icon/icon.component';
+import { CountUpDirective } from '../../directives/count-up.directive';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [IconComponent, CommonModule],
+    imports: [IconComponent, CountUpDirective, CommonModule],
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.css']
 })
