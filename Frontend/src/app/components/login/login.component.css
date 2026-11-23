@@ -36,35 +36,6 @@
 .hero-copy h1 { font-size: 30px; font-weight: 600; letter-spacing: -0.025em; line-height: 1.2; margin: 0 0 12px; color: #fff; }
 .hero-copy p { margin: 0; font-size: 15px; color: rgba(255, 255, 255, 0.75); }
 
-/* Tarjetas de muestra que flotan */
-.preview { position: relative; height: 190px; max-width: 420px; animation: fade-up 0.6s 0.15s var(--ease) backwards; }
-.preview-card {
-  position: absolute;
-  background: #fff; color: var(--text);
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-}
-.preview-card.main { left: 0; top: 0; width: 300px; padding: 16px 18px; display: grid; gap: 4px; animation: float 6s ease-in-out infinite; }
-.preview-label { font-size: 12px; color: var(--muted); }
-.preview-card.main strong { font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
-.preview-up { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 500; color: var(--success); }
-.preview-bars { display: flex; align-items: flex-end; gap: 6px; height: 54px; margin-top: 8px; }
-.preview-bars i { flex: 1; border-radius: 4px 4px 2px 2px; background: var(--brand-500); opacity: 0.85; transform-origin: bottom; animation: grow 0.8s var(--ease) backwards; }
-.preview-bars i:nth-child(odd) { background: var(--brand); }
-.preview-bars i:nth-child(2) { animation-delay: 0.05s; } .preview-bars i:nth-child(3) { animation-delay: 0.1s; }
-.preview-bars i:nth-child(4) { animation-delay: 0.15s; } .preview-bars i:nth-child(5) { animation-delay: 0.2s; }
-.preview-bars i:nth-child(6) { animation-delay: 0.25s; } .preview-bars i:nth-child(7) { animation-delay: 0.3s; }
-.preview-card.mini {
-  right: 0; bottom: 6px;
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 14px; font-size: 13px; font-weight: 500;
-  animation: float 6s 1.5s ease-in-out infinite;
-}
-.preview-card.mini app-icon { color: var(--success); }
-
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-@keyframes grow { from { transform: scaleY(0); } }
-
 .feature-list { list-style: none; margin: auto 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .feature-list li {
   display: inline-flex; align-items: center; gap: 8px;
@@ -116,6 +87,6 @@
   .hero-copy { margin-top: 0; }
   .hero-copy h1 { font-size: 22px; }
   .brand-panel { gap: 16px; }
-  .feature-list, .preview { display: none; }
+  .feature-list { display: none; }
   .form-row { grid-template-columns: 1fr; }
 }
