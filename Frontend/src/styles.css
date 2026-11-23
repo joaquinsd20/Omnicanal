@@ -294,3 +294,13 @@ app-icon { display: inline-flex; flex: 0 0 auto; }
   .stat-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .stat-value { font-size: 20px; }
 }
+
+/* Autocompletado del navegador: sin el fondo celeste por defecto */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  transition: background-color 9999s ease-out 0s;
+}
